@@ -1,0 +1,1374 @@
+<!doctype html>
+<html lang="en" data-skin="terminal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>try{var d=document.documentElement,k=localStorage.getItem("thm-roadmap-skin"),t=localStorage.getItem("thm-roadmap-theme");if(k)d.setAttribute("data-skin",k);if(t)d.setAttribute("data-theme",t);}catch(e){}</script>
+<title>Backend Dev → Cybersecurity · Quest Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#14171c; --surface:#1a1e24; --raised:#20252d; --rule:#2c323b; --rule-soft:#232830;
+    --ink:#e3e6ea; --muted:#949ba6; --faint:#6b727d;
+    --accent:#5fbfa6; --accent-ink:#0f1a17; --accent-soft:rgba(95,191,166,.12);
+    --marker:#e0b061; --marker-soft:rgba(224,176,97,.12); --boss:#d98c8c; --link:#8cc7e6;
+    --hud:rgba(20,23,28,.94);
+    --green:var(--accent); --green-ink:var(--accent-ink); --amber:var(--marker); --pink:var(--boss); --red:var(--boss); --cyan:var(--link);
+    --panel:var(--surface); --panel2:var(--raised); --line:var(--rule); --done-bg:var(--accent-soft);
+    --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --r:8px;
+    color-scheme:dark;
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  :root[data-theme="light"] {
+    --bg:#eceef1; --surface:#f6f7f9; --raised:#fdfdfe; --rule:#d7dbe1; --rule-soft:#e3e6ea;
+    --ink:#1d222a; --muted:#5c6370; --faint:#8a919c;
+    --accent:#23826c; --accent-ink:#ffffff; --accent-soft:rgba(35,130,108,.10);
+    --marker:#a56d12; --marker-soft:rgba(165,109,18,.10); --boss:#b04e4e; --link:#1f6a96;
+    --hud:rgba(236,238,241,.94); color-scheme:light;
+  }
+  :root[data-theme="dark"] { color-scheme:dark; }
+  html { scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px); scroll-behavior:smooth; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15.5px/1.6 var(--sans); -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition:none !important; animation:none !important; } }
+  a { color:var(--link); text-decoration-thickness:1px; text-underline-offset:3px; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  .muted { color:var(--muted); } .small { font-size:.86rem; }
+  header .inner, main, .hud-inner { max-width:960px; margin:auto; }
+
+  /* header */
+  header { padding:44px 20px 30px; }
+  .boot { display:none; }
+  h1 { font-weight:600; font-size:clamp(1.7rem,4vw,2.25rem); line-height:1.2; letter-spacing:-.015em; margin:0 0 10px; }
+  h1 .arrow { color:var(--faint); font-weight:400; }
+  header p { max-width:680px; margin:0; color:var(--muted); }
+
+  /* top bar */
+  .hud { position:sticky; top:0; z-index:30; background:var(--hud); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--rule); }
+  .hud-inner { padding:10px 20px 0; }
+  .hud-row { display:flex; align-items:center; gap:14px; }
+  .avatar { display:none; }
+  .player { display:flex; flex-direction:column; min-width:0; }
+  .handle { font:600 .92rem var(--sans); color:var(--ink); background:none; border:0; padding:0; width:12ch; }
+  .handle:hover { text-decoration:underline dotted var(--faint); }
+  .rank { font-size:.78rem; color:var(--muted); white-space:nowrap; }
+  .lvl { font:600 .8rem var(--mono); color:var(--accent); background:var(--accent-soft); padding:3px 8px; border-radius:6px; white-space:nowrap; }
+  .xpbox { flex:1; min-width:0; }
+  .xpbar { height:4px; background:var(--rule); border-radius:4px; overflow:hidden; }
+  .xpfill { height:100%; width:0; background:var(--accent); border-radius:4px; transition:width .4s ease; }
+  .xptext { display:flex; justify-content:space-between; gap:8px; font:.74rem var(--mono); color:var(--faint); margin-top:5px; }
+  .xptext b { color:var(--ink); font-weight:600; }
+  .nav-links { display:flex; gap:20px; overflow-x:auto; scrollbar-width:none; margin-top:8px; }
+  .nav-links::-webkit-scrollbar { display:none; }
+  .nav-links a { white-space:nowrap; text-decoration:none; color:var(--muted); font-size:.86rem; padding:6px 0 9px; border-bottom:2px solid transparent; }
+  .nav-links a:hover { color:var(--ink); }
+  .nav-links a.active { color:var(--ink); border-bottom-color:var(--accent); }
+  .sync, .themebtn { font-size:.8rem; padding:6px 10px; white-space:nowrap; flex:none; }
+  .sync.ok { color:var(--accent); } .sync.warn { color:var(--marker); }
+  .themebtn { font-size:.95rem; line-height:1; }
+
+  /* layout */
+  main { padding:28px 20px 64px; }
+  h2 { font-weight:600; font-size:1.3rem; letter-spacing:-.01em; line-height:1.3; margin:56px 0 4px; display:flex; gap:12px; align-items:baseline; }
+  h2 .lvlno { font:500 .85rem var(--mono); color:var(--faint); }
+  .sub { margin:0 0 18px; color:var(--muted); max-width:680px; }
+  h3 { margin:0 0 6px; font-size:1rem; font-weight:600; }
+  p { margin:.35rem 0 .7rem; }
+  .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+  .panel { background:var(--surface); border:1px solid var(--rule-soft); border-radius:var(--r); padding:18px 20px; }
+  .label { font-size:.82rem; color:var(--muted); }
+  .stat { font-size:1.25rem; font-weight:600; line-height:1.3; margin-top:4px; letter-spacing:-.01em; }
+
+  /* plan strip */
+  #plan { gap:0; background:var(--surface); border:1px solid var(--rule-soft); border-radius:var(--r); }
+  #plan > .panel { background:none; border:0; border-radius:0; }
+  #plan > .panel + .panel { border-left:1px solid var(--rule-soft); }
+
+  /* controls */
+  input[type=date], input[type=number], input[type=password], textarea {
+    font:inherit; font-size:.92rem; color:var(--ink); background:var(--bg); border:1px solid var(--rule); border-radius:6px; padding:7px 10px; }
+  input[type=date] { width:100%; margin:6px 0 2px; }
+  input[type=range] { width:100%; accent-color:var(--accent); margin:12px 0 4px; }
+  input[type=checkbox] { appearance:none; -webkit-appearance:none; flex:none; width:18px; height:18px; margin:3px 0 0; border:1.5px solid var(--faint); border-radius:5px; cursor:pointer; display:grid; place-items:center; background:transparent; transition:background .15s, border-color .15s; }
+  input[type=checkbox]::after { content:""; width:9px; height:5px; border:2px solid var(--accent-ink); border-top:0; border-right:0; transform:rotate(-45deg) translate(1px,-1px); opacity:0; }
+  input[type=checkbox]:checked { background:var(--accent); border-color:var(--accent); }
+  input[type=checkbox]:checked::after { opacity:1; }
+  input[type=checkbox]:hover { border-color:var(--accent); }
+  button { font:inherit; font-size:.88rem; font-weight:500; color:var(--ink); background:transparent; border:1px solid var(--rule); border-radius:6px; padding:8px 13px; cursor:pointer; transition:border-color .15s, background .15s; }
+  button:hover { border-color:var(--faint); background:var(--raised); }
+  button.primary { background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+  button.primary:hover { filter:brightness(1.06); background:var(--accent); }
+  button:disabled { opacity:.4; cursor:not-allowed; }
+  button.link { border:0; background:none; padding:0; color:var(--link); text-decoration:underline; text-underline-offset:3px; }
+  .toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .row-between { display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+  .pace { display:inline-block; font-size:.8rem; font-weight:500; padding:2px 9px; margin-top:6px; border-radius:20px; }
+  .pace.ok { color:var(--accent); background:var(--accent-soft); }
+  .pace.behind { color:var(--marker); background:var(--marker-soft); }
+  .pace.neutral { color:var(--muted); background:var(--raised); }
+  .bar { height:4px; background:var(--rule); border-radius:4px; overflow:hidden; }
+  .bar > div { height:100%; width:0; background:var(--accent); border-radius:4px; transition:width .4s ease; }
+
+  /* campaigns */
+  .campaign { display:grid; grid-template-columns:72px 1fr; gap:16px; margin:10px 0; }
+  #resources + .sub + .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .world { font:600 1.05rem var(--mono); color:var(--faint); text-align:center; line-height:1.3; padding-top:2px; }
+  .world small { display:block; font-size:.68rem; font-weight:400; margin-top:4px; white-space:nowrap; }
+  .campaign[data-status="progress"] .world { color:var(--marker); }
+  .campaign[data-status="done"] .world { color:var(--accent); }
+  .tag { display:inline-block; font-size:.76rem; color:var(--muted); margin-bottom:2px; }
+  .campaign h3 { font-size:1.05rem; }
+  .campaign h3 a { color:var(--ink); }
+  .seg { display:inline-flex; margin-top:12px; border:1px solid var(--rule); border-radius:7px; padding:2px; gap:2px; }
+  .seg button { border:0; border-radius:5px; padding:4px 11px; font-size:.8rem; color:var(--muted); }
+  .seg button:hover { background:var(--raised); }
+  .seg button[aria-pressed="true"] { background:var(--raised); color:var(--ink); box-shadow:0 0 0 1px var(--rule); }
+  .campaign[data-status="done"] .seg button[aria-pressed="true"] { background:var(--accent-soft); color:var(--accent); box-shadow:none; }
+  .campaign[data-status="progress"] .seg button[aria-pressed="true"] { background:var(--marker-soft); color:var(--marker); box-shadow:none; }
+  .callout { border-left:2px solid var(--rule); padding:4px 0 4px 16px; margin-top:18px; color:var(--muted); }
+  .callout strong { color:var(--ink); font-weight:600; }
+
+  /* mission map */
+  .map-wrap { overflow-x:auto; margin-top:18px; padding:4px 2px; }
+  .map { min-width:640px; display:grid; grid-template-columns:repeat(24,minmax(0,1fr)); gap:5px; }
+  .act { border:0; border-bottom:1px solid var(--rule); border-radius:0; padding:0 2px 6px; font-size:.74rem; color:var(--muted); text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:none; }
+  .act:hover { background:none; color:var(--ink); }
+  .act[aria-pressed="true"] { color:var(--accent); border-bottom:2px solid var(--accent); }
+  .tile { aspect-ratio:1; min-height:22px; padding:0; font:500 .7rem var(--mono); color:var(--faint); background:var(--raised); border:1px solid transparent; border-radius:5px; position:relative; margin-top:6px; }
+  .tile:hover { border-color:var(--faint); }
+  .tile.boss::before { content:""; position:absolute; top:3px; right:3px; width:4px; height:4px; border-radius:50%; background:var(--boss); }
+  .tile.done { background:var(--accent-soft); color:var(--accent); }
+  .tile.now { box-shadow:0 0 0 2px var(--marker); color:var(--ink); }
+  .legend { display:flex; gap:18px; flex-wrap:wrap; font-size:.78rem; color:var(--muted); margin-top:12px; }
+  .legend .k { display:inline-block; width:10px; height:10px; margin-right:6px; vertical-align:-1px; border-radius:3px; border:0 !important; outline:0 !important; background:var(--raised); }
+  .legend span:nth-child(1) .k { background:var(--accent) !important; }
+  .legend span:nth-child(2) .k { background:transparent; box-shadow:inset 0 0 0 2px var(--marker); }
+  .legend span:nth-child(3) .k { width:6px; height:6px; border-radius:50%; background:var(--boss); vertical-align:1px; }
+
+  /* mission list */
+  .filters { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:26px 0 6px; }
+  .chip { border-radius:20px; padding:4px 12px; font-size:.82rem; color:var(--muted); }
+  .chip[aria-pressed="true"] { background:var(--raised); color:var(--ink); border-color:var(--faint); }
+  .filters .spacer { flex:1; }
+  .missions { display:block; }
+  .act-head { display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin:26px 0 4px; padding-bottom:8px; border-bottom:1px solid var(--rule); }
+  .act-head h3 { margin:0; font-size:1rem; }
+  .act-head span { font-size:.8rem; color:var(--muted); }
+  .act-head.hidden { display:none; }
+  .diff { font-size:.78rem; }
+  .diff.easy { color:var(--accent); } .diff.medium { color:var(--marker); } .diff.hard, .diff.insane { color:var(--boss); }
+  .mission { display:grid; grid-template-columns:24px 1fr auto; gap:4px 14px; padding:14px 12px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent; transition:background .2s; }
+  .mission:hover { background:color-mix(in srgb, var(--surface) 60%, transparent); }
+  .mission.hidden { display:none; }
+  .mission.now { border-left-color:var(--marker); background:var(--marker-soft); }
+  .mission.flash { animation:flash 1.4s ease-out; }
+  @keyframes flash { 0% { background:var(--marker-soft); } }
+  .m-check { padding-top:1px; }
+  .m-top { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px; }
+  .m-id { font:500 .8rem var(--mono); color:var(--faint); }
+  .m-title { font-weight:600; }
+  .mission.done .m-title { color:var(--muted); }
+  .boss-tag { font-size:.74rem; color:var(--boss); border:1px solid color-mix(in srgb, var(--boss) 40%, transparent); border-radius:20px; padding:0 8px; }
+  .now-tag { font-size:.74rem; color:var(--marker); background:var(--marker-soft); border-radius:20px; padding:0 8px; }
+  .m-desc { margin:3px 0 0; color:var(--muted); font-size:.92rem; max-width:620px; }
+  .m-meta { text-align:right; font-size:.78rem; color:var(--faint); white-space:nowrap; display:flex; flex-direction:column; gap:2px; }
+  .m-xp { font-family:var(--mono); }
+  .mission.done .m-xp { color:var(--accent); }
+  .mission details { margin-top:8px; }
+  .mission summary { cursor:pointer; font-size:.82rem; color:var(--muted); list-style:none; width:max-content; }
+  .mission summary:hover { color:var(--ink); }
+  .mission summary::-webkit-details-marker { display:none; }
+  .mission summary::before { content:"+"; display:inline-block; width:1em; font-family:var(--mono); }
+  .mission details[open] summary::before { content:"−"; }
+  .has-notes { color:var(--faint); margin-left:4px; }
+  .mission textarea { width:100%; max-width:620px; min-height:80px; resize:vertical; margin-top:8px; display:block; }
+  .hours-row { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:.84rem; color:var(--muted); }
+  .hours-row input { width:84px; }
+  .empty { text-align:center; padding:30px; color:var(--muted); border:1px dashed var(--rule); border-radius:var(--r); margin-top:16px; }
+
+  /* weekly quests */
+  .quests { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+  .quest { text-align:left; display:flex; flex-direction:column; gap:2px; padding:14px; background:var(--surface); border:1px solid var(--rule-soft); border-radius:var(--r); font-weight:400; }
+  .quest h3 { margin:0; font-size:.95rem; }
+  .quest .hrs { font:500 .82rem var(--mono); color:var(--muted); }
+  .quest .state { font-size:.76rem; color:var(--faint); margin-top:6px; }
+  .quest[aria-pressed="true"] { background:var(--accent-soft); border-color:transparent; }
+  .quest[aria-pressed="true"] .state { color:var(--accent); }
+
+  /* loot & side quests */
+  .looted { font-size:.74rem; color:var(--faint); margin-left:8px; font-weight:400; }
+  .side h3 { margin-top:4px; }
+  .side .m-head { display:flex; justify-content:space-between; font-size:.78rem; color:var(--faint); }
+  .side .m-id { font-size:.78rem; }
+  .side .count { display:block; font-size:.8rem; color:var(--muted); margin-bottom:6px; }
+  .side ul { list-style:none; padding:0; margin:14px 0 10px; display:grid; gap:10px; }
+  .side label { display:flex; gap:10px; align-items:flex-start; cursor:pointer; font-size:.92rem; }
+  .side.complete .count { color:var(--accent); }
+
+  table { border-collapse:collapse; width:100%; }
+  th,td { text-align:left; padding:11px 14px; border-bottom:1px solid var(--rule-soft); vertical-align:top; }
+  th { color:var(--muted); font-weight:500; font-size:.84rem; }
+  tr:last-child td { border-bottom:0; }
+  tr.current-row td { background:var(--marker-soft); }
+  tr.current-row td:first-child { font-weight:600; }
+  tr.current-row td:first-child::after { content:"Now"; margin-left:8px; font-size:.72rem; font-weight:500; color:var(--marker); }
+  .table-wrap { overflow-x:auto; background:var(--surface); border:1px solid var(--rule-soft); border-radius:var(--r); }
+
+  /* final boss */
+  .bosshp { display:flex; align-items:center; gap:12px; font-size:.84rem; color:var(--muted); margin-bottom:16px; }
+  .bosshp strong { font-weight:500; }
+  .bosshp .bar { flex:1; }
+  .bosshp .bar > div { background:var(--boss); }
+  #ready-label { font-family:var(--mono); }
+  .checklist { display:grid; gap:2px; }
+  .checklist label { display:flex; gap:12px; padding:9px 4px; cursor:pointer; border-bottom:1px solid var(--rule-soft); }
+  .checklist label:last-child { border-bottom:0; }
+  .checklist label:has(input:checked) span { color:var(--muted); }
+  .verdict { margin-top:16px; padding:12px 14px; border-radius:6px; background:var(--raised); font-size:.92rem; color:var(--muted); }
+  .verdict strong { color:var(--ink); font-weight:600; }
+
+  /* achievements */
+  .badges { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .badge { padding:14px 12px; border-radius:var(--r); border:1px dashed var(--rule); color:var(--faint); text-align:left; }
+  .badge .icon { font-size:1.15rem; filter:grayscale(1); opacity:.3; display:block; }
+  .badge .name { font-weight:600; font-size:.88rem; display:block; margin-top:6px; }
+  .badge .how { font-size:.76rem; display:block; }
+  .badge.got { border:1px solid var(--rule-soft); background:var(--surface); color:var(--muted); }
+  .badge.got .icon { filter:none; opacity:1; }
+  .badge.got .name { color:var(--ink); }
+
+  .backup textarea { width:100%; min-height:80px; font:.78rem var(--mono); margin-top:10px; }
+  .status { font-size:.84rem; min-height:1.3em; margin-top:8px; color:var(--accent); }
+  .cloud { border-top:1px solid var(--rule-soft); margin-top:20px; padding-top:18px; }
+  .cloud input[type=password] { min-width:0; flex:1 1 220px; }
+
+  /* feedback */
+  .toasts { position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:50; display:grid; gap:8px; max-width:min(320px, calc(100vw - 32px)); }
+  .toast { background:var(--raised); border:1px solid var(--rule); border-radius:var(--r); padding:10px 14px; box-shadow:0 8px 24px rgba(0,0,0,.25); animation:pop .2s ease-out; }
+  .toast .t1 { font-size:.72rem; color:var(--accent); text-transform:none; }
+  .toast .t2 { font-weight:600; font-size:.92rem; }
+  @keyframes pop { from { transform:translateY(8px); opacity:0; } }
+  .floatxp { position:fixed; z-index:60; pointer-events:none; font:600 .76rem var(--mono); color:var(--accent); animation:rise .9s ease-out forwards; }
+  @keyframes rise { to { transform:translateY(-26px); opacity:0; } }
+
+  footer { color:var(--faint); text-align:center; font-size:.82rem; padding:20px 16px 44px; }
+
+  @media (max-width:760px) {
+    .grid, .quests { grid-template-columns:1fr; }
+    .quests { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    #plan > .panel + .panel { border-left:0; border-top:1px solid var(--rule-soft); }
+    .campaign { grid-template-columns:1fr; gap:4px; } .world { text-align:left; display:flex; gap:10px; align-items:baseline; } .world small { margin:0; }
+    #resources + .sub + .grid { grid-template-columns:1fr; }
+    .rank, .xptext span:first-child, .sync .txt { display:none; }
+    .mission { grid-template-columns:22px 1fr; }
+    .m-meta { grid-column:2; flex-direction:row; gap:12px; text-align:left; }
+    .nav-links { gap:16px; }
+  }
+  @media print {
+    :root { --bg:#fff; --surface:#fff; --raised:#f4f4f4; --ink:#111; --muted:#444; --faint:#777; --rule:#ccc; --rule-soft:#ddd; }
+    .hud, .toolbar, .filters, .backup, .seg, .toasts, .badges { display:none !important; }
+    .mission.hidden { display:grid; } .act-head.hidden { display:flex; }
+  }
+  /* ================= terminal skin (default) ================= */
+  :root[data-skin="terminal"] {
+    --bg:#0f1211; --surface:#131716; --raised:#1a1f1d; --rule:#2a312e; --rule-soft:#202624;
+    --ink:#c8d0cb; --muted:#808b85; --faint:#5c6560;
+    --accent:#8cc49a; --accent-ink:#0f1211; --accent-soft:rgba(140,196,154,.10);
+    --marker:#d6b46c; --marker-soft:rgba(214,180,108,.09); --boss:#d08585; --link:#86b8c9;
+    --hud:rgba(15,18,17,.95); --sans:var(--mono); --r:0px;
+  }
+  :root[data-skin="terminal"][data-theme="light"] {
+    --bg:#eceeea; --surface:#f4f5f2; --raised:#fafaf8; --rule:#cfd4cd; --rule-soft:#dfe3dd;
+    --ink:#2a302c; --muted:#5f6862; --faint:#8b938d;
+    --accent:#3d7a4d; --accent-ink:#ffffff; --accent-soft:rgba(61,122,77,.09);
+    --marker:#8a6516; --marker-soft:rgba(138,101,22,.09); --boss:#a44848; --link:#2f6b80;
+    --hud:rgba(236,238,234,.95);
+  }
+  :root[data-skin="terminal"] body { font-size:14.5px; line-height:1.65; }
+  :root[data-skin="terminal"] :is(button,.chip,.pace,.seg,.seg button,.boss-tag,.now-tag,.lvl,.tile,input,textarea,.verdict,.empty,.badge,.quest,.table-wrap,.toast,.xpbar,.xpfill,.bar,.bar > div,.panel,#plan) { border-radius:0 !important; }
+
+  :root[data-skin="terminal"] header { border-bottom:1px solid var(--rule-soft); padding-top:36px; }
+  :root[data-skin="terminal"] .boot { display:block; margin:0 0 16px; min-height:0; color:var(--faint); font:13px/1.65 var(--mono); white-space:pre-wrap; }
+  :root[data-skin="terminal"] .boot .ok { color:var(--accent); }
+  :root[data-skin="terminal"] h1 { font-weight:600; font-size:clamp(1.35rem,3.4vw,1.8rem); letter-spacing:0; }
+  :root[data-skin="terminal"] h1::after { content:"_"; color:var(--accent); font-weight:400; margin-left:2px; }
+  :root[data-skin="terminal"] h1 .arrow { color:var(--accent); }
+  :root[data-skin="terminal"] h2 { font-size:1.08rem; font-weight:600; letter-spacing:0; gap:10px; }
+  :root[data-skin="terminal"] h2::before { content:"$"; color:var(--accent); font-weight:400; }
+  :root[data-skin="terminal"] h2 .lvlno { display:none; }
+  :root[data-skin="terminal"] .sub::before { content:"# "; color:var(--faint); }
+  :root[data-skin="terminal"] .tag::before { content:"# "; color:var(--faint); }
+  :root[data-skin="terminal"] .callout { border-left:1px dashed var(--rule); }
+
+  /* top bar */
+  :root[data-skin="terminal"] .nav-links a::before { content:"./"; color:var(--faint); }
+  :root[data-skin="terminal"] .lvl { background:none; padding:0; color:var(--accent); }
+  :root[data-skin="terminal"] :is(.lvl,.pace,.diff,.boss-tag,.now-tag)::before { content:"["; }
+  :root[data-skin="terminal"] :is(.lvl,.pace,.diff,.boss-tag,.now-tag)::after { content:"]"; }
+  :root[data-skin="terminal"] .handle::before { content:"@"; }
+
+  /* segmented bars like ███░░░ */
+  :root[data-skin="terminal"] :is(.bar,.xpbar) { height:8px; background:repeating-linear-gradient(90deg, var(--rule) 0 6px, transparent 6px 8px); }
+  :root[data-skin="terminal"] :is(.bar > div,.xpfill) { background:repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 8px); }
+  :root[data-skin="terminal"] .bosshp .bar > div { background:repeating-linear-gradient(90deg, var(--boss) 0 6px, transparent 6px 8px); }
+
+  /* [ ] / [x] checkboxes */
+  :root[data-skin="terminal"] input[type=checkbox] { width:auto; height:auto; border:0; background:none !important; display:inline-block; margin:0; font:500 .92rem/1.65 var(--mono); color:var(--faint); }
+  :root[data-skin="terminal"] input[type=checkbox]::after { display:none; }
+  :root[data-skin="terminal"] input[type=checkbox]::before { content:"[ ]"; }
+  :root[data-skin="terminal"] input[type=checkbox]:checked { color:var(--accent); }
+  :root[data-skin="terminal"] input[type=checkbox]:checked::before { content:"[x]"; }
+  :root[data-skin="terminal"] input[type=checkbox]:hover { color:var(--ink); }
+  :root[data-skin="terminal"] .mission { grid-template-columns:30px 1fr auto; }
+  :root[data-skin="terminal"] .m-check { padding-top:0; }
+
+  /* buttons, chips, tags */
+  :root[data-skin="terminal"] button.primary { background:transparent; color:var(--accent); border-color:var(--accent); }
+  :root[data-skin="terminal"] button.primary:hover { background:var(--accent-soft); filter:none; }
+  :root[data-skin="terminal"] .chip[aria-pressed="true"] { background:none; color:var(--accent); border-color:var(--accent); }
+  :root[data-skin="terminal"] .pace { background:none !important; padding:0; }
+  :root[data-skin="terminal"] .pace.neutral { color:var(--muted); }
+  :root[data-skin="terminal"] .boss-tag, :root[data-skin="terminal"] .now-tag { border:0; background:none; padding:0; }
+  :root[data-skin="terminal"] .diff { text-transform:lowercase; }
+  :root[data-skin="terminal"] .seg { border-color:var(--rule); }
+  :root[data-skin="terminal"] .act-head { border-bottom-style:dashed; }
+  :root[data-skin="terminal"] .act-head h3::before { content:"## "; color:var(--faint); font-weight:400; }
+  :root[data-skin="terminal"] .mission { border-bottom-style:dashed; }
+  :root[data-skin="terminal"] .tile.now { box-shadow:none; outline:1px solid var(--marker); outline-offset:1px; }
+  :root[data-skin="terminal"] .legend span:nth-child(2) .k { box-shadow:none; outline:1px solid var(--marker) !important; }
+
+  /* achievements as log entries */
+  :root[data-skin="terminal"] .badge .icon { display:none; }
+  :root[data-skin="terminal"] .badge::before { content:"[locked]"; font-size:.74rem; color:var(--faint); }
+  :root[data-skin="terminal"] .badge.got::before { content:"[unlocked]"; color:var(--accent); }
+  :root[data-skin="terminal"] .badge .name { margin-top:2px; }
+  :root[data-skin="terminal"] .toast { border-left:2px solid var(--accent); }
+  :root[data-skin="terminal"] .toast .t1::before { content:"[+] "; }
+  :root[data-skin="terminal"] tr.current-row td:first-child::after { content:"<- now"; }
+  :root[data-skin="terminal"] footer::before { content:"-- "; }
+  :root[data-skin="terminal"] footer::after { content:" --"; }
+  /* ================= motivation layer ================= */
+  :root { --accent:#4fd1a6; --accent-soft:rgba(79,209,166,.13); --marker:#f2c063; --marker-soft:rgba(242,192,99,.12);
+          --warm:#f3a25b; --warm-soft:rgba(243,162,91,.13); --link:#86c8f0; }
+  :root[data-theme="light"] { --accent:#1c8a6c; --accent-soft:rgba(28,138,108,.11); --marker:#a8690c; --warm:#c8641c; --warm-soft:rgba(200,100,28,.10); --link:#1c6aa0; }
+  :root[data-skin="terminal"] { --accent:#9ad8a6; --accent-soft:rgba(154,216,166,.11); --marker:#ebc56e; --warm:#eaa36c; --warm-soft:rgba(234,163,108,.12); --link:#8cc6db; }
+  :root[data-skin="terminal"][data-theme="light"] { --accent:#2f7d45; --marker:#8a6516; --warm:#b45f22; --warm-soft:rgba(180,95,34,.10); --link:#2a6a82; }
+
+  .hero { display:grid; grid-template-columns:1fr auto; gap:6px 32px; align-items:center; margin:0 0 16px; padding:24px 26px 20px;
+          background:var(--surface); border:1px solid var(--rule-soft); border-radius:var(--r); position:relative; overflow:hidden; }
+  .hero::before { content:""; position:absolute; left:0; right:0; top:0; height:3px; background:linear-gradient(90deg, var(--accent), var(--marker) 60%, var(--warm)); }
+  .hello { margin:0; font-size:.95rem; color:var(--muted); }
+  .cheer { margin:4px 0 14px; font-size:1.35rem; font-weight:600; line-height:1.35; letter-spacing:-.01em; max-width:560px; }
+  .next { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; font-size:.92rem; color:var(--muted); }
+  .next b { color:var(--ink); font-weight:600; }
+  .next button { padding:5px 12px; font-size:.84rem; color:var(--accent); border-color:color-mix(in srgb, var(--accent) 45%, var(--rule)); }
+  .next button:hover { background:var(--accent-soft); }
+  .hero-side { display:flex; flex-direction:column; align-items:center; gap:12px; }
+  .ring-wrap { position:relative; width:128px; height:128px; }
+  .hero .ring { width:128px; height:128px; transform:rotate(-90deg); }
+  .hero .ring circle { fill:none; stroke-width:9; }
+  .hero .ring .trk { stroke:var(--rule); }
+  .hero .ring .arc { stroke:url(#ringGrad); stroke-linecap:round; stroke-dasharray:326.73; stroke-dashoffset:326.73; transition:stroke-dashoffset .8s ease; }
+  .ring-txt { position:absolute; inset:0; display:grid; place-content:center; text-align:center; }
+  .ring-txt b { font:600 1.6rem var(--mono); line-height:1; }
+  .ring-txt span { font-size:.72rem; color:var(--muted); margin-top:4px; }
+  .chips { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; }
+  .chip-s { font-size:.78rem; padding:2px 10px; border-radius:20px; background:var(--raised); color:var(--muted); white-space:nowrap; }
+  .chip-s.hot { background:var(--warm-soft); color:var(--warm); }
+  .chip-s.good { background:var(--accent-soft); color:var(--accent); }
+  .chip-s:empty { display:none; }
+  .tip { grid-column:1 / -1; margin:14px 0 0; padding-top:12px; border-top:1px solid var(--rule-soft); font-size:.88rem; color:var(--muted); }
+  .tip b { color:var(--warm); font-weight:600; }
+
+  /* warmer accents elsewhere */
+  .act-head.cleared h3::after { content:"  ✓ cleared"; color:var(--accent); font-weight:500; font-size:.85rem; }
+  .mission.done .m-check input { box-shadow:0 0 0 3px var(--accent-soft); }
+  .tile.done { background:color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+  .badge.got { border-color:color-mix(in srgb, var(--warm) 35%, var(--rule-soft)); background:linear-gradient(180deg, var(--warm-soft), transparent 70%), var(--surface); }
+  .toast.win { border-left:3px solid var(--warm); }
+  .toast.win .t1 { color:var(--warm); }
+  .quest[aria-pressed="true"] .state::before { content:"✓ "; }
+  .xpfill { background:linear-gradient(90deg, var(--accent), var(--marker)); }
+  .bar > div { background:linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--marker))); }
+
+  /* terminal version of the panel */
+  :root[data-skin="terminal"] .hero { padding-top:34px; }
+  :root[data-skin="terminal"] .hero::before { height:auto; background:none; content:"$ cat ~/motd"; left:26px; top:12px; right:auto; font-size:.78rem; color:var(--faint); }
+  :root[data-skin="terminal"] .cheer { font-size:1.15rem; color:var(--accent); }
+  :root[data-skin="terminal"] .cheer::before { content:"> "; color:var(--warm); }
+  :root[data-skin="terminal"] .chip-s { border-radius:0; background:none; padding:0; }
+  :root[data-skin="terminal"] .chip-s::before { content:"["; } :root[data-skin="terminal"] .chip-s::after { content:"]"; }
+  :root[data-skin="terminal"] .tip b::before { content:"// "; }
+  :root[data-skin="terminal"] .hero .ring .arc { stroke-linecap:butt; }
+  :root[data-skin="terminal"] .xpfill, :root[data-skin="terminal"] .bar > div { background:repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 8px); }
+  :root[data-skin="terminal"] .badge.got { background:var(--surface); }
+  :root[data-skin="terminal"] .badge.got::before { color:var(--warm); }
+
+  @media (max-width:760px) {
+    .hero { grid-template-columns:1fr; padding:22px 18px 18px; }
+    .hero-side { flex-direction:row; justify-content:flex-start; }
+    .ring-wrap, .hero .ring { width:96px; height:96px; }
+    .ring-txt b { font-size:1.25rem; }
+    .chips { justify-content:flex-start; }
+  }
+
+  /* ================= alignment + responsive pass ================= */
+  /* one shared content column: header, top bar and main now line up on the same left/right edges */
+  header { padding-left:0; padding-right:0; }
+  header .inner { padding:0 20px; }
+  .boot { overflow-wrap:anywhere; }
+  .grid > *, .hero > *, .player { min-width:0; }
+  .nav-links { -webkit-overflow-scrolling:touch; }
+
+  /* top bar: all three buttons share one height so they sit on the same line */
+  .sync, .themebtn { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:34px; line-height:1; padding:0 12px; }
+  .themebtn { min-width:34px; padding:0 9px; }
+
+  /* save file strip: label / big value / control / note now line up across all three panels */
+  #plan > .panel { display:flex; flex-direction:column; }
+  #plan #week-now { order:1; margin-top:4px; }
+  #plan #start-date { order:2; margin:12px 0 4px; }
+  #plan #finish-planned { order:3; }
+  #plan #hours { margin:12px 0 4px; }
+  #plan .pace { align-self:flex-start; margin-top:10px; }
+  #plan > .panel > :last-child { margin-top:auto !important; padding-top:8px; }
+
+  /* campaigns: roomier world column so "Weeks 10–22" never clips */
+  .campaign { grid-template-columns:84px minmax(0,1fr); align-items:start; }
+  .campaign .seg { max-width:100%; flex-wrap:wrap; }
+
+  /* mission map: act labels wrap instead of being cut off, bottom-aligned on the underline */
+  .act { display:flex; align-items:flex-end; white-space:normal; overflow:visible; text-overflow:clip; line-height:1.25; min-width:0; }
+
+  /* shop table: keep the stage column on one line */
+  th:first-child, td:first-child { white-space:nowrap; width:1%; }
+
+  @media (max-width:760px) {
+    /* beat the terminal-skin grid so the mission row really collapses to 2 columns */
+    .mission, :root[data-skin="terminal"] .mission { grid-template-columns:28px minmax(0,1fr); }
+    .m-meta { flex-wrap:wrap; }
+    .campaign { grid-template-columns:minmax(0,1fr); }
+    .quests .quest:last-child:nth-child(odd) { grid-column:1 / -1; }
+    /* mission map: tiles reflow into 8 columns, act labels become full-width filter rows */
+    .map-wrap { overflow-x:visible; }
+    .map { min-width:0; grid-template-columns:repeat(8,minmax(0,1fr)); }
+    .act { grid-column:1 / -1 !important; padding:7px 2px 6px; }
+    .act[data-act="a5"] { margin-bottom:10px; }
+    .tile { min-height:0; }
+  }
+  @media (max-width:560px) {
+    html { scroll-padding-top:calc(env(safe-area-inset-top,0px) + 150px); }
+    header .inner, .hud-inner, main { padding-left:16px; padding-right:16px; }
+    header { padding-top:28px; padding-bottom:22px; }
+    .hud-row { flex-wrap:wrap; gap:8px 10px; }
+    .player { flex:1 1 0; }
+    .handle { width:100%; }
+    .xpbox { order:5; flex:1 1 100%; }
+    main { padding-top:20px; }
+    h2 { margin-top:44px; }
+    .panel { padding:16px; }
+    .cheer { font-size:1.15rem; }
+    th, td { padding:10px 12px; }
+    .badges { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .toasts { left:16px; right:16px; max-width:none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <pre class="boot" id="boot" aria-hidden="true"></pre>
+    <h1>Backend Dev <span class="arrow">→</span> Cybersecurity</h1>
+    <p>A 24-week quest to build skills for both Vulnerability Assessment &amp; Penetration Testing (VAPT) and Application Security (AppSec), starting with a head-start bonus from Java Spring Boot, PostgreSQL, and Windows Server experience.</p>
+  </div>
+</header>
+
+<div class="hud">
+  <div class="hud-inner">
+    <div class="hud-row">
+      <div class="avatar" aria-hidden="true" id="avatar">👾</div>
+      <div class="player">
+        <input class="handle" id="handle" type="text" maxlength="18" aria-label="Player name" spellcheck="false">
+        <div class="rank" id="rank">Script Kiddie</div>
+      </div>
+      <div class="lvl" id="lvl">LV 1</div>
+      <div class="xpbox">
+        <div class="xpbar" role="progressbar" aria-label="Experience to next level" id="xpbar" aria-valuemin="0" aria-valuemax="100"><div class="xpfill" id="xpfill"></div></div>
+        <div class="xptext"><span id="xp-next">0 / 300 XP to next level</span><span><b id="xp-total">0</b> XP</span></div>
+      </div>
+      <button type="button" class="sync" id="sync-btn">☁ <span class="txt">Cloud save</span></button>
+      <button type="button" class="themebtn" id="skin-btn" aria-label="Switch style between terminal and logbook" title="Switch style: terminal / logbook">&gt;_</button>
+      <button type="button" class="themebtn" id="theme-btn" aria-label="Switch between light and dark theme" title="Switch light / dark">◐</button>
+    </div>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#plan">Save file</a>
+      <a href="#paths">Campaigns</a>
+      <a href="#tracker">Missions</a>
+      <a href="#routine">Weekly quests</a>
+      <a href="#resources">Loot</a>
+      <a href="#projects">Side quests</a>
+      <a href="#budget">Shop</a>
+      <a href="#readiness">Final boss</a>
+      <a href="#achievements">Achievements</a>
+    </nav>
+  </div>
+</div>
+
+<main>
+  <section class="hero" id="today" aria-label="Today">
+    <div class="hero-main">
+      <p class="hello" id="hello">Welcome back.</p>
+      <p class="cheer" id="cheer"></p>
+      <div class="next" id="next"></div>
+    </div>
+    <div class="hero-side">
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+          <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--warm)"/></linearGradient></defs>
+          <circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" id="hero-arc" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="ring-txt"><b id="hero-pct">0%</b><span>missions cleared</span></div>
+      </div>
+      <div class="chips"><span class="chip-s" id="streak"></span><span class="chip-s" id="week-left"></span></div>
+    </div>
+    <p class="tip" id="tip"></p>
+  </section>
+
+  <section id="plan" class="grid" aria-label="Save file">
+    <div class="panel corners">
+      <label class="label" for="start-date">Game start date</label>
+      <input type="date" id="start-date">
+      <div id="week-now" class="stat">New game</div>
+      <div class="muted small" id="finish-planned">Set a date to load your calendar.</div>
+    </div>
+    <div class="panel corners">
+      <label class="label" for="hours">Stamina per week</label>
+      <div class="stat"><span id="hours-out">8.5</span> hours</div>
+      <input type="range" id="hours" min="7" max="10" step="0.5" value="8.5" aria-describedby="hours-help">
+      <div class="muted small" id="hours-help">Weekly quest lengths scale to match.</div>
+    </div>
+    <div class="panel corners">
+      <div class="label">Pace</div>
+      <div class="stat" id="pace-title">—</div>
+      <span class="pace neutral" id="pace-badge">Waiting for start date</span>
+      <div class="muted small" id="pace-detail" style="margin-top:6px">Target: 6–9 months. An estimate, not a job guarantee.</div>
+    </div>
+  </section>
+
+  <h2 id="paths"><span class="lvlno">01</span> Campaigns</h2>
+  <p class="sub">The TryHackMe learning paths, in play order. Set each one's status as you go. Completing a campaign earns 150 XP.</p>
+  <div class="panel campaign" data-path="p1">
+    <div class="world">W1<small>Weeks 1–3</small></div><div>
+      <span class="tag green">Foundation</span>
+      <h3><a href="https://tryhackme.com/path/outline/cybersecurity101" target="_blank" rel="noopener" data-res="thm101">Cyber Security 101</a></h3>
+      Review networking, Linux, Windows, Active Directory, command-line tools, Nmap, HTTP, Burp Suite basics, and introductory exploitation. Since your knowledge is basic, use this path to close gaps; skip topics you can already demonstrate confidently.
+      <div></div><div class="seg" role="group" aria-label="Cyber Security 101 status"></div>
+    </div>
+  </div>
+  <div class="panel campaign" data-path="p2">
+    <div class="world">W2<small>Weeks 3–12</small></div><div>
+      <span class="tag green">Core VAPT</span>
+      <h3><a href="https://tryhackme.com/path/outline/jrpenetrationtester" target="_blank" rel="noopener" data-res="thmjpt">Jr Penetration Tester</a></h3>
+      Focus on reconnaissance, Nmap, web enumeration, Burp Suite, SQL injection, XSS, SSRF, IDOR, authentication weaknesses, file inclusion, command injection, privilege escalation, Active Directory basics, and reporting.
+      <div></div><div class="seg" role="group" aria-label="Jr Penetration Tester status"></div>
+    </div>
+  </div>
+  <div class="panel campaign" data-path="p3">
+    <div class="world">W3<small>Weeks 10–22</small></div><div>
+      <span class="tag pink">AppSec specialization</span>
+      <h3><a href="https://tryhackme.com/path/outline/webapppentesting" target="_blank" rel="noopener" data-res="thmweb">Web Application Pentesting</a></h3>
+      Deepen JWT and OAuth security, session handling, advanced injection, access control, insecure deserialization, SSRF, path traversal, race conditions, CORS, and source-code review. Tie each finding to a secure code fix.
+      <div></div><div class="seg" role="group" aria-label="Web Application Pentesting status"></div>
+    </div>
+  </div>
+  <div class="callout"><strong>Bonus world:</strong> Add the <a href="https://tryhackme.com/path/outline/offensivepentesting" target="_blank" rel="noopener">Offensive Pentesting</a> path or targeted Windows/Linux labs after identifying infrastructure gaps. Don't rush through multiple paths just to collect completion badges.</div>
+
+  <h2 id="tracker"><span class="lvlno">02</span> Mission map</h2>
+  <p class="sub">24 missions across 5 acts, rising from Easy to Insane. Each act ends in a boss mission. Tick a mission when its practical milestone is done (+100 XP, bosses +200).</p>
+  <div class="panel">
+    <div class="row-between"><strong id="progress-label">0 / 24 missions cleared</strong><span id="progress-percent" class="muted">0%</span></div>
+    <div class="bar"><div id="progress-bar"></div></div>
+    <div class="map-wrap"><div class="map" id="map"></div></div>
+    <div class="legend">
+      <span><i class="k" style="background:var(--green);border-color:var(--green)"></i>Cleared</span>
+      <span><i class="k" style="outline:2px solid var(--amber)"></i>You are here</span>
+      <span><i class="k" style="border-color:var(--pink)"></i>Boss mission</span>
+      <span id="hours-total"></span>
+    </div>
+    <div class="toolbar">
+      <button type="button" class="primary" id="jump-now">Jump to current mission</button>
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+      <button type="button" id="reset-weeks">Reset missions</button>
+    </div>
+  </div>
+  <div class="filters" role="group" aria-label="Filter missions">
+    <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
+    <button type="button" class="chip" data-filter="todo" aria-pressed="false">Open</button>
+    <button type="button" class="chip" data-filter="done" aria-pressed="false">Cleared</button>
+    <button type="button" class="chip" data-filter="boss" aria-pressed="false">Bosses</button>
+    <button type="button" class="chip" data-filter="notes" aria-pressed="false">With notes</button>
+    <span class="spacer"></span>
+    <span class="muted small" id="filter-info"></span>
+  </div>
+  <div class="missions" id="missions"></div>
+
+  <h2 id="routine"><span class="lvlno">03</span> Weekly quests</h2>
+  <div class="row-between">
+    <p class="muted" style="margin:0">Five study sessions a week, +10 XP each. They reset every week.</p>
+    <strong id="session-summary" class="small"></strong>
+  </div>
+  <div class="quests" id="quests"></div>
+
+  <h2 id="resources"><span class="lvlno">04</span> Loot</h2>
+  <p class="sub">Free resources that power up your skills.</p>
+  <div class="grid">
+    <div class="panel"><h3><a href="https://portswigger.net/web-security" target="_blank" rel="noopener" data-res="psa">PortSwigger Web Security Academy</a></h3><p>Free web security explanations and labs for Burp Suite, injection, access control, authentication, SSRF, and advanced attacks.</p></div>
+    <div class="panel"><h3><a href="https://owasp.org/www-project-web-security-testing-guide/" target="_blank" rel="noopener" data-res="wstg">OWASP Web Security Testing Guide</a></h3><p>A structured methodology and checklist for web application assessments.</p></div>
+    <div class="panel"><h3><a href="https://owasp.org/www-project-api-security/" target="_blank" rel="noopener" data-res="api">OWASP API Security Top 10</a></h3><p>Use this to prioritize API authorization, authentication, resource consumption, and other common risks.</p></div>
+    <div class="panel"><h3><a href="https://owasp.org/www-project-juice-shop/" target="_blank" rel="noopener" data-res="juice">OWASP Juice Shop</a></h3><p>A deliberately vulnerable application for legal local practice and independent portfolio work.</p></div>
+  </div>
+
+  <h2 id="projects"><span class="lvlno">05</span> Side quests</h2>
+  <p class="sub">Portfolio projects. Each step is worth 75 XP.</p>
+  <div class="grid" id="side-grid"></div>
+
+  <h2 id="budget"><span class="lvlno">06</span> Shop</h2>
+  <p class="sub">When to spend on upgrades.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Stage</th><th>Suggested action</th></tr></thead>
+      <tbody id="budget-rows">
+        <tr data-months="1-1"><td>Month 1</td><td>Start with free rooms and identify gaps.</td></tr>
+        <tr data-months="2-3"><td>Months 2–3</td><td>Consider TryHackMe Premium if it unlocks the paths you need.</td></tr>
+        <tr data-months="3-5"><td>Months 3–5</td><td>Upgrade only if required advanced content is not available on your plan.</td></tr>
+        <tr data-months="5-6"><td>Months 5–6</td><td>Evaluate certifications against the requirements in real job listings.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Verify current plans, regional pricing, and exam fees at <a href="https://tryhackme.com/pricing" target="_blank" rel="noopener">TryHackMe pricing</a> and <a href="https://tryhackme.com/certifications" target="_blank" rel="noopener">certifications</a>. You do not need to buy a certification before building demonstrable skills.</p>
+
+  <h2 id="readiness"><span class="lvlno">07</span> Final boss: job readiness</h2>
+  <p class="sub">Each skill you can honestly check off deals damage (+50 XP).</p>
+  <div class="panel">
+    <div class="bosshp"><strong>Boss HP</strong><div class="bar"><div id="boss-hp"></div></div><span id="ready-label">12 / 12</span></div>
+    <div id="readiness-list" class="checklist"></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="toolbar"><button type="button" id="reset-ready">Reset checklist</button></div>
+  </div>
+  <div class="callout"><strong>Apply strategically:</strong> begin with junior web/API penetration testing, security testing, and developer-focused AppSec roles when you can independently validate findings and explain fixes. For broader VAPT roles, continue strengthening Windows/Linux, networking, and privilege escalation.</div>
+  <p class="muted">Rules of engagement: practice only in your own lab or on systems for which you have explicit authorization. Keep portfolio reports sanitized and never publish credentials, tokens, or company-sensitive information.</p>
+
+  <h2 id="achievements"><span class="lvlno">08</span> Achievements</h2>
+  <p class="sub" id="ach-count">0 unlocked</p>
+  <div class="badges" id="badges"></div>
+
+  <h2>Save &amp; load</h2>
+  <div class="panel backup">
+    <p class="muted" style="margin-top:0">Your save lives only in this browser. To continue on another device, copy the save code, paste it into this box there, then choose Load save.</p>
+    <div class="toolbar" style="margin-top:0">
+      <button type="button" id="make-backup">Show save code</button>
+      <button type="button" id="restore">Load save</button>
+      <button type="button" id="reset-all">Delete save</button>
+    </div>
+    <textarea id="backup-box" aria-label="Save code" placeholder="Save code appears here, or paste one to load."></textarea>
+    <div class="status" id="backup-status" role="status"></div>
+    <div class="cloud" id="cloud">
+      <h3>Cloud save</h3>
+      <p class="muted small" style="margin-top:0">Enter your sync passphrase once on each device. After that, progress saves to your server a few seconds after every change, and the newest save loads whenever you open the page.</p>
+      <div class="toolbar" style="margin-top:0" id="pass-row">
+        <input type="password" id="sync-pass" placeholder="Sync passphrase" aria-label="Sync passphrase" autocomplete="current-password">
+        <button type="button" class="primary" id="sync-connect">Connect</button>
+      </div>
+      <div class="toolbar" style="margin-top:0" id="sync-row" hidden>
+        <button type="button" id="sync-now">Sync now</button>
+        <button type="button" id="sync-forget">Disconnect this device</button>
+      </div>
+      <div class="status" id="cloud-status" role="status"></div>
+    </div>
+  </div>
+</main>
+<footer>Designed for 7–10 study hours a week. Reassess milestones as you progress.</footer>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+const milestones = [
+["Networking and HTTP","Explain DNS, TCP vs UDP, ports, TLS, HTTP methods, headers, and status codes."],
+["Linux, Windows and PowerShell","Navigate a Linux shell and inspect Windows processes, services, and permissions with PowerShell."],
+["Nmap and reconnaissance","Scan authorized lab targets and explain discovered ports and services."],
+["Burp Suite basics","Intercept, modify, and analyze HTTP requests with Repeater."],
+["SQL injection","Demonstrate injection in a deliberately vulnerable lab and explain parameterized-query remediation."],
+["Access control and IDOR","Test two lab accounts for improper access to each other's records."],
+["Authentication, sessions and JWT","Analyze token validation, expiry, signing, authorization, and session handling."],
+["XSS, CSRF and SSRF","Explain preconditions, reproduce lab cases, and propose mitigations."],
+["Enumeration and validation","Manually validate a finding rather than relying only on a scanner result."],
+["File and command injection","Reproduce relevant lab vulnerabilities and identify secure implementation patterns."],
+["Privilege escalation","Enumerate permissions, services, scheduled tasks, and common OS misconfigurations in labs."],
+["Reporting and retesting","Write a report with scope, evidence, impact, severity rationale, and remediation."],
+["Spring Security and authorization","Review a security configuration and test role- and object-level authorization."],
+["OAuth2, Keycloak and JWT","Test issuer/audience checks, scopes, roles, expiry, and refresh-token handling."],
+["PostgreSQL and ORM security","Review query patterns, database roles, privileges, and secret handling."],
+["Java framework vulnerabilities","Review deserialization risks, dependencies, management endpoints, and insecure configuration."],
+["Advanced web attacks","Practice SSRF, path traversal, race conditions, or another advanced server-side issue."],
+["Source-code review","Trace a request through a Spring controller, service, repository, and security configuration."],
+["Windows and Active Directory","Practice enumeration, authentication concepts, service permissions, and privilege-escalation fundamentals."],
+["Security tools and CI/CD","Run a SAST or dependency scanner and explain findings and limitations."],
+["Independent web/API assessment","Assess an unfamiliar legal lab target without following a walkthrough."],
+["Independent infrastructure assessment","Complete a scoped infrastructure lab and document the attack path."],
+["Portfolio and interview practice","Publish two polished project write-ups and explain findings in a mock interview."],
+["Readiness assessment","Complete a timed independent assessment, report results, and retest fixes."]
+];
+const acts = [
+  {id:"a1", name:"Act I: Foundation", from:1, to:4, diff:"Easy"},
+  {id:"a2", name:"Act II: Core VAPT", from:5, to:12, diff:"Medium"},
+  {id:"a3", name:"Act III: Stack security", from:13, to:16, diff:"Medium"},
+  {id:"a4", name:"Act IV: Deepening", from:17, to:20, diff:"Hard"},
+  {id:"a5", name:"Act V: Career prep", from:21, to:24, diff:"Insane"}
+];
+const actOf = n => acts.find(a => n >= a.from && n <= a.to);
+const isBoss = n => acts.some(a => a.to === n);
+const readinessItems = [
+"Explain TCP/IP, DNS, HTTP, TLS, common ports, and basic network scanning.",
+"Use Burp Suite to intercept, modify, and analyze HTTP requests.",
+"Independently validate common web vulnerabilities and explain impact.",
+"Use Linux shell, Windows command line, and PowerShell for basic enumeration.",
+"Review Spring Security configuration and identify authorization weaknesses.",
+"Explain JWT, OAuth2, sessions, and common authentication failure modes.",
+"Identify unsafe database access, insecure configuration, and dependency risks.",
+"Recommend a fix and create a regression test for a demonstrated vulnerability.",
+"Complete two independent lab assessments without copying a walkthrough.",
+"Write a professional report with scope, evidence, impact, severity, and remediation.",
+"Publish two polished, sanitized portfolio projects.",
+"Explain a vulnerability end-to-end in a mock technical interview."
+];
+const projects = [
+  {id:"A", title:"Spring Boot API security", shows:"Web/API VAPT and AppSec.", tasks:["Test authorization and object-level access controls in a local lab.","Assess JWT validation, input handling, and sensitive data exposure.","Write a report, fix issues, and add regression tests."]},
+  {id:"B", title:"Secure development pipeline", shows:"AppSec and DevSecOps.", tasks:["Run SAST and dependency scanning against a Java project.","Validate findings and explain false positives.","Add checks to CI and document remediation."]},
+  {id:"C", title:"Windows assessment", shows:"Infrastructure VAPT.", tasks:["Use an authorized Windows lab.","Assess service configurations, permissions and privilege boundaries.","Produce an evidence-backed report and fixes."]}
+];
+const sessions = [
+  {name:"Study", base:2, what:"Learning path and concepts"},
+  {name:"Guided lab", base:2, what:"Guided hands-on labs"},
+  {name:"Solo run", base:2, what:"Independent practice"},
+  {name:"Stack skills", base:1.5, what:"Java security or infrastructure"},
+  {name:"Debrief", base:1, what:"Notes, reports and review"}
+];
+const BASE_HOURS = 8.5;
+const XP = {week:100, boss:200, path:150, project:75, ready:50, session:10};
+const LEVEL_XP = 300;
+const ranks = [[1,"Script Kiddie","👾"],[3,"Packet Sniffer","📡"],[5,"Recon Runner","🔭"],[8,"Bug Hunter","🐛"],[11,"Exploit Crafter","🧪"],[14,"Red Teamer","🎯"],[17,"AppSec Guardian","🛡️"],[20,"Elite Hacker","🏆"]];
+
+/* ---------- state ---------- */
+const KEY = "thm-roadmap-v2";
+const blank = () => ({weeks:[], ready:[], start:"", hours:8.5, paths:{}, notes:{}, sessions:{}, projects:{}, opened:{}, handle:"player_one", ach:[], activity:[], updatedAt:0});
+let state = blank();
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) { state = Object.assign(blank(), JSON.parse(raw)); return; }
+    state.weeks = JSON.parse(localStorage.getItem("thm-roadmap-weeks") || "[]");
+    state.ready = JSON.parse(localStorage.getItem("thm-roadmap-ready") || "[]");
+  } catch(e) {}
+}
+let lastSnapshot = null;
+function snapshot(){ const {updatedAt, ...rest} = state; return JSON.stringify(rest); }
+function save(){
+  const snap = snapshot();
+  if (snap === lastSnapshot) return;
+  markActive(); lastSnapshot = snapshot(); state.updatedAt = Date.now();
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+  scheduleSync();
+}
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- dates ---------- */
+const DAY = 86400000;
+function parseDate(s){ if(!s) return null; const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); }
+function today(){ const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
+const fmt = (d, o={month:"short", day:"numeric"}) => d.toLocaleDateString(undefined, o);
+function weekStart(n){ const s = parseDate(state.start); return s ? new Date(s.getTime() + (n-1)*7*DAY) : null; }
+function currentWeek(){
+  const s = parseDate(state.start); if(!s) return null;
+  const diff = Math.floor((today() - s) / DAY);
+  if (diff < 0) return 0;
+  return Math.min(25, Math.floor(diff/7) + 1);
+}
+const doneCount = () => milestones.filter((_,i) => state.weeks[i]).length;
+
+/* ---------- XP & levels ---------- */
+function totalXP(){
+  let xp = 0;
+  milestones.forEach((_,i) => { if (state.weeks[i]) xp += isBoss(i+1) ? XP.boss : XP.week; });
+  Object.values(state.paths).forEach(v => { if (v === "done") xp += XP.path; });
+  projects.forEach(p => (state.projects[p.id]||[]).forEach(v => { if (v) xp += XP.project; }));
+  readinessItems.forEach((_,i) => { if (state.ready[i]) xp += XP.ready; });
+  Object.values(state.sessions).forEach(a => (a||[]).forEach(v => { if (v) xp += XP.session; }));
+  return xp;
+}
+const levelOf = xp => Math.floor(xp / LEVEL_XP) + 1;
+const rankOf = lvl => ranks.filter(r => lvl >= r[0]).pop();
+let lastLevel = null;
+function renderHUD(){
+  const xp = totalXP(), lvl = levelOf(xp), into = xp % LEVEL_XP, r = rankOf(lvl);
+  document.getElementById("lvl").textContent = `LV ${lvl}`;
+  document.getElementById("rank").textContent = r[1];
+  document.getElementById("avatar").textContent = r[2];
+  document.getElementById("xp-total").textContent = xp.toLocaleString();
+  document.getElementById("xp-next").textContent = `${into} / ${LEVEL_XP} XP to LV ${lvl+1}`;
+  document.getElementById("xpfill").style.width = `${into/LEVEL_XP*100}%`;
+  document.getElementById("xpbar").setAttribute("aria-valuenow", Math.round(into/LEVEL_XP*100));
+  if (lastLevel !== null && lvl > lastLevel) toast("lvl", "Level up!", `Level ${lvl} · ${r[1]}`);
+  lastLevel = lvl;
+}
+const handle = document.getElementById("handle");
+handle.addEventListener("input", () => { state.handle = handle.value; save(); renderHero(); });
+
+/* ---------- toasts / float xp ---------- */
+function toast(kind, t1, t2){
+  const el = document.createElement("div"); el.className = `toast ${kind}`;
+  el.innerHTML = `<div class="t1">${esc(t1)}</div><div class="t2">${esc(t2)}</div>`;
+  const box = document.getElementById("toasts"); box.appendChild(el);
+  while (box.children.length > 3) box.firstElementChild.remove();
+  setTimeout(() => el.remove(), 3200);
+}
+function floatXP(target, amount){
+  const r = target.getBoundingClientRect();
+  const el = document.createElement("div"); el.className = "floatxp";
+  el.textContent = `${amount > 0 ? "+" : ""}${amount} XP`;
+  el.style.left = `${Math.min(window.innerWidth - 90, r.left + r.width/2)}px`; el.style.top = `${r.top - 6}px`;
+  document.body.appendChild(el); setTimeout(() => el.remove(), 1000);
+}
+
+/* ---------- campaigns ---------- */
+const statuses = [["todo","Not started"],["progress","In progress"],["done","Pwned"]];
+document.querySelectorAll("[data-path]").forEach(card => {
+  const id = card.dataset.path, seg = card.querySelector(".seg");
+  statuses.forEach(([val,label]) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.dataset.val = val;
+    b.title = {todo:"Not started", progress:"In progress", done:"Complete"}[val];
+    b.addEventListener("click", () => {
+      const was = state.paths[id] === "done";
+      state.paths[id] = val; save();
+      if (val === "done" && !was) floatXP(b, XP.path); if (was && val !== "done") floatXP(b, -XP.path);
+      renderAll();
+    });
+    seg.appendChild(b);
+  });
+});
+function renderPaths(){
+  document.querySelectorAll("[data-path]").forEach(card => {
+    const v = state.paths[card.dataset.path] || "todo";
+    card.dataset.status = v;
+    card.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.val === v)));
+  });
+}
+
+/* ---------- map + missions ---------- */
+let filter = "all", actFilter = null;
+const map = document.getElementById("map");
+acts.forEach(a => {
+  const b = document.createElement("button"); b.type = "button"; b.className = "act";
+  b.style.gridColumn = `${a.from} / ${a.to + 1}`; b.textContent = a.name; b.dataset.act = a.id;
+  b.setAttribute("aria-pressed","false"); b.title = `Show only ${a.name} (missions ${a.from}–${a.to})`;
+  b.addEventListener("click", () => { actFilter = actFilter === a.id ? null : a.id; renderMissions(); });
+  map.appendChild(b);
+});
+milestones.forEach((m,i) => {
+  const n = i+1, b = document.createElement("button"); b.type = "button";
+  b.className = "tile" + (isBoss(n) ? " boss" : ""); b.textContent = isBoss(n) ? "☠" : n;
+  b.title = `Mission ${n}${isBoss(n) ? " (boss)" : ""}: ${m[0]}`; b.setAttribute("aria-label", `Go to mission ${n}, ${m[0]}`);
+  b.addEventListener("click", () => goToWeek(n));
+  map.appendChild(b);
+});
+const missionWrap = document.getElementById("missions");
+milestones.forEach((m,i) => {
+  const n = i+1, a = actOf(n), boss = isBoss(n);
+  if (n === a.from) {
+    const h = document.createElement("div"); h.className = "act-head"; h.dataset.acthead = a.id;
+    h.innerHTML = `<h3>${a.name}</h3><span><span class="diff ${a.diff.toLowerCase()}">${a.diff}</span>, missions ${a.from}–${a.to}</span>`;
+    missionWrap.appendChild(h);
+  }
+  const el = document.createElement("article"); el.className = "mission" + (boss ? " boss" : ""); el.id = `week-${n}`; el.dataset.act = a.id;
+  el.innerHTML = `
+    <label class="m-check"><input type="checkbox" data-week="${i}" aria-label="Mission ${n} complete: ${m[0]}"></label>
+    <div class="m-body">
+      <div class="m-top"><span class="m-id">${String(n).padStart(2,"0")}</span><span class="m-title">${m[0]}</span>${boss ? '<span class="boss-tag">Boss</span>' : ""}<span class="now-tag" hidden>This week</span></div>
+      <p class="m-desc">${m[1]}</p>
+      <details><summary>Notes and hours<span class="has-notes"></span></summary>
+        <textarea data-note="${n}" placeholder="Rooms finished, links, what clicked, what to revisit…" aria-label="Notes for mission ${n}"></textarea>
+        <div class="hours-row"><label for="hrs-${n}">Hours logged</label><input type="number" id="hrs-${n}" data-hours="${n}" min="0" max="80" step="0.5" placeholder="0"></div>
+      </details>
+    </div>
+    <div class="m-meta"><span class="dates"></span><span class="m-xp">+${boss ? XP.boss : XP.week} XP</span></div>`;
+  missionWrap.appendChild(el);
+});
+const emptyMsg = document.createElement("div"); emptyMsg.className = "empty"; emptyMsg.hidden = true; missionWrap.appendChild(emptyMsg);
+
+const noteFor = n => state.notes[n] || {text:"", hours:""};
+function renderMissions(){
+  const now = currentWeek(), done = doneCount();
+  document.getElementById("progress-label").textContent = `${done} / 24 missions cleared`;
+  document.getElementById("progress-percent").textContent = `${Math.round(done/24*100)}%`;
+  document.getElementById("progress-bar").style.width = `${done/24*100}%`;
+  map.querySelectorAll(".tile").forEach((b,i) => { b.classList.toggle("done", !!state.weeks[i]); b.classList.toggle("now", now === i+1); });
+  map.querySelectorAll(".act").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.act === actFilter)));
+
+  let shown = 0, totalHrs = 0;
+  milestones.forEach((m,i) => {
+    const n = i+1, el = document.getElementById(`week-${n}`), note = noteFor(n);
+    const isDone = !!state.weeks[i], hasNotes = !!(note.text||"").trim() || +note.hours > 0;
+    totalHrs += +note.hours || 0;
+    el.querySelector("[data-week]").checked = isDone;
+    el.classList.toggle("done", isDone); el.classList.toggle("now", now === n);
+    el.querySelector(".now-tag").hidden = now !== n;
+    const s = weekStart(n);
+    el.querySelector(".dates").textContent = s ? `${fmt(s)} – ${fmt(new Date(s.getTime()+6*DAY))}` : "";
+    const ta = el.querySelector("[data-note]"), hr = el.querySelector("[data-hours]");
+    if (document.activeElement !== ta) ta.value = note.text || "";
+    if (document.activeElement !== hr) hr.value = note.hours || "";
+    const bits = []; if (+note.hours > 0) bits.push(`${note.hours} h`); if ((note.text||"").trim()) bits.push("notes");
+    el.querySelector(".has-notes").textContent = bits.length ? `(${bits.join(", ")})` : "";
+    const visible = (filter === "all" || (filter === "done" && isDone) || (filter === "todo" && !isDone) || (filter === "notes" && hasNotes) || (filter === "boss" && isBoss(n)))
+                 && (!actFilter || el.dataset.act === actFilter);
+    el.classList.toggle("hidden", !visible); if (visible) shown++;
+  });
+  missionWrap.querySelectorAll(".act-head").forEach(h => {
+    const ac = acts.find(x => x.id === h.dataset.acthead);
+    h.classList.toggle("cleared", milestones.every((_,j) => j+1 < ac.from || j+1 > ac.to || state.weeks[j]));
+    h.classList.toggle("hidden", !missionWrap.querySelector(`.mission[data-act="${h.dataset.acthead}"]:not(.hidden)`));
+  });
+  emptyMsg.hidden = shown > 0;
+  emptyMsg.textContent = filter === "done" ? "No missions cleared in this view yet. Finish a milestone and tick its box."
+                      : filter === "notes" ? "No notes in this view yet. Open “Notes & hours” on any mission to add some."
+                      : "Every mission in this view is cleared.";
+  const a = acts.find(x => x.id === actFilter);
+  document.getElementById("filter-info").innerHTML = a ? `Showing ${esc(a.name)} · <button type="button" class="link" id="clear-act">Show all acts</button>` : "";
+  const ca = document.getElementById("clear-act"); if (ca) ca.onclick = () => { actFilter = null; renderMissions(); };
+  document.getElementById("hours-total").textContent = totalHrs ? `${totalHrs} h logged` : "";
+  document.querySelectorAll("[data-filter]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.filter === filter)));
+  const jump = document.getElementById("jump-now");
+  jump.disabled = !(now >= 1 && now <= 24); jump.title = jump.disabled ? "Set a start date to use this" : "";
+}
+function goToWeek(n){
+  if (actFilter && actOf(n).id !== actFilter) actFilter = null;
+  filter = "all"; renderMissions();
+  const el = document.getElementById(`week-${n}`);
+  el.scrollIntoView({block:"center"});
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+}
+document.querySelectorAll("[data-filter]").forEach(b => b.addEventListener("click", () => { filter = b.dataset.filter; renderMissions(); }));
+document.getElementById("jump-now").addEventListener("click", () => { const n = currentWeek(); if (n >= 1 && n <= 24) goToWeek(n); });
+document.getElementById("reset-weeks").addEventListener("click", () => {
+  if (confirm("Reset all 24 missions? Your notes and hours stay.")) { state.weeks = []; save(); lastLevel = null; renderAll(); }
+});
+
+/* ---------- save file & pace ---------- */
+const startInput = document.getElementById("start-date"), hoursInput = document.getElementById("hours");
+startInput.addEventListener("change", () => { state.start = startInput.value; save(); renderAll(); });
+hoursInput.addEventListener("input", () => { state.hours = +hoursInput.value; save(); renderPlan(); renderQuests(); });
+function renderPlan(){
+  startInput.value = state.start || ""; hoursInput.value = state.hours;
+  if (document.activeElement !== handle) handle.value = state.handle || "player_one";
+  document.getElementById("hours-out").textContent = state.hours;
+  const now = currentWeek(), done = doneCount(), s = parseDate(state.start);
+  const wn = document.getElementById("week-now"), fp = document.getElementById("finish-planned");
+  const title = document.getElementById("pace-title"), badge = document.getElementById("pace-badge"), detail = document.getElementById("pace-detail");
+  if (!s) { wn.textContent = "New game"; fp.textContent = "Set a date to load your calendar."; title.textContent = "—";
+    badge.className = "pace neutral"; badge.textContent = "Waiting for start date"; detail.textContent = "Target: 6–9 months. An estimate, not a job guarantee."; return; }
+  fp.textContent = `Planned finish: ${fmt(new Date(s.getTime() + 24*7*DAY - DAY), {month:"short", day:"numeric", year:"numeric"})}`;
+  if (now === 0) { const d = Math.round((s - today())/DAY);
+    wn.textContent = `Starts in ${d} day${d===1?"":"s"}`; title.textContent = "Ready player one";
+    badge.className = "pace neutral"; badge.textContent = "Not started yet"; detail.textContent = "Mission 1 unlocks on your start date."; return; }
+  wn.textContent = now > 24 ? "Plan period complete" : `Mission ${now} of 24`;
+  const diff = done - Math.min(24, now - 1);
+  if (done === 24) { title.textContent = "Game cleared"; badge.className = "pace ok"; badge.textContent = "All missions done"; detail.textContent = "Time to face the final boss."; return; }
+  if (diff >= 0) { title.textContent = diff > 0 ? `${diff} ahead` : "On track"; badge.className = "pace ok"; badge.textContent = diff > 0 ? "Speedrunning" : "On pace"; }
+  else { title.textContent = `${-diff} behind`; badge.className = "pace behind"; badge.textContent = "Catch-up needed"; }
+  const elapsed = Math.max(1, (today() - s) / (7*DAY));
+  detail.textContent = done > 0
+    ? `At your current pace you'd finish around ${fmt(new Date(today().getTime() + ((24 - done) / (done / elapsed)) * 7 * DAY), {month:"short", year:"numeric"})}.`
+    : "Clear your first mission to see a projected finish.";
+}
+
+/* ---------- weekly quests ---------- */
+const questWrap = document.getElementById("quests");
+sessions.forEach((s,i) => {
+  const b = document.createElement("button"); b.type = "button"; b.className = "quest"; b.dataset.session = i;
+  b.innerHTML = `<h3>${s.name}</h3><span class="hrs"></span><span class="muted small">${s.what}</span><span class="state"></span>`;
+  b.addEventListener("click", () => {
+    const k = sessionKey(), arr = state.sessions[k] || [];
+    arr[i] = !arr[i]; state.sessions[k] = arr; save();
+    floatXP(b, arr[i] ? XP.session : -XP.session); renderAll();
+  });
+  questWrap.appendChild(b);
+});
+function sessionKey(){
+  const n = currentWeek(); if (n !== null && n >= 1) return `w${n}`;
+  const t = today(), mon = new Date(t.getTime() - ((t.getDay()+6)%7)*DAY);
+  return `d${mon.getFullYear()}-${mon.getMonth()+1}-${mon.getDate()}`;
+}
+const round25 = x => Math.round(x*4)/4;
+function renderQuests(){
+  const scale = state.hours / BASE_HOURS, arr = state.sessions[sessionKey()] || [];
+  let n = 0, h = 0;
+  questWrap.querySelectorAll(".quest").forEach((b,i) => {
+    const hrs = round25(sessions[i].base * scale);
+    b.querySelector(".hrs").textContent = `${hrs} h`;
+    b.querySelector(".state").textContent = arr[i] ? "Done" : "+10 XP";
+    b.setAttribute("aria-pressed", String(!!arr[i]));
+    if (arr[i]) { n++; h += hrs; }
+  });
+  const w = currentWeek();
+  document.getElementById("session-summary").textContent = `${w >= 1 && w <= 24 ? `Mission ${w}` : "This week"}: ${n}/5 quests · ${h} of ${state.hours} h`;
+}
+
+/* ---------- loot ---------- */
+document.querySelectorAll("[data-res]").forEach(a => a.addEventListener("click", () => { state.opened[a.dataset.res] = true; save(); renderLoot(); renderAchievements(); }));
+function renderLoot(){
+  document.querySelectorAll("[data-res]").forEach(a => {
+    let tag = a.parentElement.querySelector(".looted");
+    if (state.opened[a.dataset.res] && !tag) { tag = document.createElement("span"); tag.className = "looted"; tag.textContent = "LOOTED"; a.after(tag); }
+    if (!state.opened[a.dataset.res] && tag) tag.remove();
+  });
+}
+
+/* ---------- side quests ---------- */
+const sideGrid = document.getElementById("side-grid");
+projects.forEach(p => {
+  const c = document.createElement("div"); c.className = "panel side"; c.dataset.project = p.id;
+  c.innerHTML = `<div class="m-head"><span class="m-id">Side quest ${p.id}</span><span class="m-xp">+${XP.project * p.tasks.length} XP</span></div>
+    <h3>${p.title}</h3><span class="muted small count"></span><div class="bar"><div></div></div>
+    <ul>${p.tasks.map((t,j) => `<li><label><input type="checkbox" data-proj="${p.id}" data-task="${j}"><span>${t}</span></label></li>`).join("")}</ul>
+    <p class="small"><strong>Demonstrates:</strong> ${p.shows}</p>`;
+  sideGrid.appendChild(c);
+});
+function renderSide(){
+  projects.forEach(p => {
+    const c = sideGrid.querySelector(`[data-project="${p.id}"]`), arr = state.projects[p.id] || [];
+    const n = p.tasks.filter((_,j) => arr[j]).length;
+    c.querySelectorAll("[data-task]").forEach((x,j) => x.checked = !!arr[j]);
+    c.querySelector(".count").textContent = n === p.tasks.length ? "Quest complete" : `${n} / ${p.tasks.length} steps`;
+    c.querySelector(".bar > div").style.width = `${n/p.tasks.length*100}%`;
+    c.classList.toggle("complete", n === p.tasks.length);
+  });
+}
+
+/* ---------- shop ---------- */
+function renderShop(){
+  const n = currentWeek(), month = n >= 1 ? Math.min(6, Math.ceil(n / 4.35)) : null; let marked = false;
+  document.querySelectorAll("#budget-rows tr").forEach(tr => {
+    const [a,b] = tr.dataset.months.split("-").map(Number), hit = !marked && month !== null && month >= a && month <= b;
+    if (hit) marked = true; tr.classList.toggle("current-row", hit);
+  });
+}
+
+/* ---------- final boss ---------- */
+const readyList = document.getElementById("readiness-list");
+readinessItems.forEach((item,i) => { const l = document.createElement("label"); l.innerHTML = `<input type="checkbox" data-ready="${i}"><span>${item}</span>`; readyList.appendChild(l); });
+function renderBoss(){
+  const boxes = [...readyList.querySelectorAll("[data-ready]")];
+  boxes.forEach((x,i) => x.checked = !!state.ready[i]);
+  const n = boxes.filter(x => x.checked).length, hp = boxes.length - n;
+  document.getElementById("ready-label").textContent = `${hp} / ${boxes.length}`;
+  document.getElementById("boss-hp").style.width = `${hp/boxes.length*100}%`;
+  document.getElementById("verdict").innerHTML = n === 12 ? "<strong>Boss defeated.</strong> You're ready to apply: start with junior web/API pentesting and developer-focused AppSec roles, and keep levelling infrastructure skills."
+    : n >= 9 ? "<strong>Boss is staggering.</strong> You can start applying to junior roles while you land the last few hits."
+    : n >= 5 ? "<strong>Boss at half health.</strong> Keep going with independent labs and your side quests."
+    : "<strong>Boss at full strength.</strong> These skills build up naturally as you clear missions.";
+}
+
+/* ---------- achievements ---------- */
+const achievements = [
+  {id:"first", icon:"🩸", name:"First Blood", how:"Clear your first mission", test:() => doneCount() >= 1},
+  {id:"act1", icon:"🚪", name:"Act I Cleared", how:"Defeat the Foundation boss", test:() => [1,2,3,4].every(n => state.weeks[n-1])},
+  {id:"half", icon:"⚔️", name:"Halfway There", how:"Clear 12 missions", test:() => doneCount() >= 12},
+  {id:"bosses", icon:"☠️", name:"Boss Slayer", how:"Clear every boss mission", test:() => acts.every(a => state.weeks[a.to-1])},
+  {id:"pwn", icon:"🏴", name:"Pwned a Path", how:"Complete a campaign", test:() => Object.values(state.paths).includes("done")},
+  {id:"week", icon:"🔥", name:"Full Week", how:"Finish all 5 weekly quests", test:() => Object.values(state.sessions).some(a => a && sessions.every((_,i) => a[i]))},
+  {id:"scribe", icon:"📜", name:"Scribe", how:"Write notes on 5 missions", test:() => Object.values(state.notes).filter(x => (x.text||"").trim()).length >= 5},
+  {id:"grind", icon:"⏱️", name:"Grinder", how:"Log 50 hours", test:() => Object.values(state.notes).reduce((s,x) => s + (+x.hours||0), 0) >= 50},
+  {id:"loot", icon:"💎", name:"Loot Goblin", how:"Open all 4 loot links", test:() => ["psa","wstg","api","juice"].every(k => state.opened[k])},
+  {id:"ship", icon:"🚀", name:"Shipped It", how:"Finish a side quest", test:() => projects.some(p => p.tasks.every((_,j) => (state.projects[p.id]||[])[j]))},
+  {id:"hired", icon:"💼", name:"Job Ready", how:"Defeat the final boss", test:() => readinessItems.every((_,i) => state.ready[i])},
+  {id:"all", icon:"🏆", name:"Completionist", how:"Clear all 24 missions", test:() => doneCount() === 24}
+];
+const badgeWrap = document.getElementById("badges");
+achievements.forEach(a => { const d = document.createElement("div"); d.className = "badge"; d.dataset.ach = a.id;
+  d.innerHTML = `<span class="icon" aria-hidden="true">${a.icon}</span><span class="name">${a.name}</span><span class="how">${a.how}</span>`; badgeWrap.appendChild(d); });
+let achReady = false;
+function renderAchievements(){
+  let count = 0;
+  achievements.forEach(a => {
+    const got = a.test(), el = badgeWrap.querySelector(`[data-ach="${a.id}"]`);
+    el.classList.toggle("got", got); el.setAttribute("aria-label", `${a.name}: ${got ? "unlocked" : "locked"}. ${a.how}`);
+    if (got) count++;
+    const known = state.ach.includes(a.id);
+    if (got && !known) { state.ach.push(a.id); if (achReady) toast("ach", "Achievement unlocked", `${a.icon} ${a.name}`); }
+    if (!got && known) state.ach = state.ach.filter(x => x !== a.id);
+  });
+  document.getElementById("ach-count").textContent = `${count} of ${achievements.length} unlocked`;
+  save();
+}
+
+/* ---------- changes ---------- */
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.matches("[data-week]")) {
+    const i = +t.dataset.week; state.weeks[i] = t.checked; floatXP(t, (t.checked?1:-1) * (isBoss(i+1) ? XP.boss : XP.week));
+    if (t.checked) {
+      const a = actOf(i+1), actDone = milestones.every((_,j) => j+1 < a.from || j+1 > a.to || state.weeks[j]);
+      if (actDone) toast("win", "Act cleared", `${a.name} complete. Huge milestone!`);
+      else if (isBoss(i+1)) toast("win", "Boss defeated", `Mission ${pad2(i+1)} down. That was a big one.`);
+      else toast("win", `Mission ${pad2(i+1)} cleared`, clearLines[Math.floor(Math.random()*clearLines.length)]);
+    }
+  }
+  else if (t.matches("[data-ready]")) { state.ready[+t.dataset.ready] = t.checked; floatXP(t, (t.checked?1:-1) * XP.ready); }
+  else if (t.matches("[data-proj]")) { const a = state.projects[t.dataset.proj] || []; a[+t.dataset.task] = t.checked; state.projects[t.dataset.proj] = a; floatXP(t, (t.checked?1:-1) * XP.project); }
+  else return;
+  save(); renderAll();
+});
+let noteTimer;
+document.addEventListener("input", e => {
+  const t = e.target;
+  if (t.matches("[data-note]") || t.matches("[data-hours]")) {
+    const n = t.dataset.note || t.dataset.hours, note = Object.assign({text:"", hours:""}, state.notes[n]);
+    if (t.matches("[data-note]")) note.text = t.value; else note.hours = t.value;
+    state.notes[n] = note;
+    clearTimeout(noteTimer); noteTimer = setTimeout(() => { save(); renderMissions(); renderAchievements(); }, 400);
+  }
+});
+document.getElementById("reset-ready").addEventListener("click", () => { if (confirm("Reset the final boss checklist?")) { state.ready = []; save(); lastLevel = null; renderAll(); } });
+
+/* ---------- save / load ---------- */
+const box = document.getElementById("backup-box"), status = document.getElementById("backup-status");
+document.getElementById("make-backup").addEventListener("click", async () => {
+  box.value = btoa(unescape(encodeURIComponent(JSON.stringify(state)))); box.select();
+  try { await navigator.clipboard.writeText(box.value); status.textContent = "Save code copied to your clipboard."; }
+  catch(e) { status.textContent = "Save code selected. Copy it and keep it somewhere safe."; }
+});
+document.getElementById("restore").addEventListener("click", () => {
+  const code = box.value.trim();
+  if (!code) { status.textContent = "Paste a save code into the box first."; return; }
+  try {
+    const data = JSON.parse(decodeURIComponent(escape(atob(code))));
+    if (typeof data !== "object" || !Array.isArray(data.weeks)) throw 0;
+    if (!confirm("Overwrite the save on this device?")) return;
+    state = Object.assign(blank(), data); save(); lastLevel = null; renderAll(); status.textContent = "Save loaded.";
+  } catch(e) { status.textContent = "That save code couldn't be read. Copy the whole code and try again."; }
+});
+document.getElementById("reset-all").addEventListener("click", () => {
+  if (confirm("Delete your save? This clears all progress, notes, dates and settings on this device, and in your cloud save if this device is connected.")) { state = blank(); save(); lastLevel = null; renderAll(); box.value = ""; status.textContent = "Save deleted. New game."; }
+});
+
+/* ---------- nav spy ---------- */
+const navLinks = [...document.querySelectorAll(".nav-links a")], targets = navLinks.map(a => document.querySelector(a.getAttribute("href")));
+function spy(){ const y = window.scrollY + 140; let idx = 0;
+  targets.forEach((t,i) => { if (t.getBoundingClientRect().top + window.scrollY <= y) idx = i; });
+  navLinks.forEach((a,i) => a.classList.toggle("active", i === idx)); }
+window.addEventListener("scroll", spy, {passive:true});
+
+/* ---------- boot sequence ---------- */
+function boot(){
+  const el = document.getElementById("boot");
+  const lines = [
+    ["$ sudo openvpn roadmap-lab.ovpn", ""],
+    ["> connected to lab network, loading save file", " [OK]"],
+    ["> stack bonus: java, spring boot, postgresql, windows server", " [+]"]
+  ];
+  const reduce = true; // shown instantly, no typing animation
+  const html = (upto, partial) => lines.slice(0, upto).map(l => `${esc(l[0])}<span class="ok">${esc(l[1])}</span>`).join("\n") + (partial !== undefined ? (upto ? "\n" : "") + esc(partial) : "") + '<span class="cursor"></span>';
+  if (reduce) { el.innerHTML = html(lines.length); return; }
+  let li = 0, ci = 0;
+  (function tick(){
+    if (li >= lines.length) { el.innerHTML = html(lines.length); return; }
+    const text = lines[li][0];
+    if (ci <= text.length) { el.innerHTML = html(li, text.slice(0, ci)); ci += 2; setTimeout(tick, 18); }
+    else { li++; ci = 0; el.innerHTML = html(li); setTimeout(tick, 220); }
+  })();
+}
+
+
+/* ---------- cloud save via /api/progress ---------- */
+const SYNC_URL = "/api/progress", PASS_KEY = "thm-roadmap-sync-pass";
+const sync = {pass:null, busy:false, timer:null, lastSync:null, error:""};
+const syncBtn = document.getElementById("sync-btn"), cloudStatus = document.getElementById("cloud-status");
+function renderSync(){
+  const time = sync.lastSync ? sync.lastSync.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}) : "";
+  let txt = "Cloud save", cls = "";
+  if (!sync.pass) txt = "Cloud save";
+  else if (sync.busy) txt = "Syncing…";
+  else if (sync.error) { txt = "Sync failed"; cls = "warn"; }
+  else if (time) { txt = `Saved ${time}`; cls = "ok"; }
+  syncBtn.className = `sync ${cls}`; syncBtn.querySelector(".txt").textContent = txt;
+  syncBtn.title = sync.pass ? "Sync now" : "Set up cloud save";
+  document.getElementById("pass-row").hidden = !!sync.pass;
+  document.getElementById("sync-row").hidden = !sync.pass;
+  cloudStatus.style.color = sync.error ? "var(--amber)" : "";
+  cloudStatus.textContent = sync.error || (sync.busy ? "Syncing…" : sync.pass ? (time ? `Connected. Last synced at ${time}.` : "Connected.") : "");
+}
+async function call(method, body){
+  const r = await fetch(SYNC_URL, {method, cache:"no-store",
+    headers: {"Content-Type":"application/json", "x-sync-key": sync.pass},
+    body: body ? JSON.stringify(body) : undefined});
+  if (r.status === 401) throw new Error("auth");
+  if (r.status === 409) return {conflict:true, data: await r.json()};
+  if (!r.ok) { let m = ""; try { m = (await r.json()).error || ""; } catch(e) {} throw new Error(m || `Server responded ${r.status}`); }
+  return {data: await r.json()};
+}
+function applyRemote(remote){
+  state = Object.assign(blank(), remote);
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+  lastSnapshot = snapshot(); lastLevel = null; achReady = false; renderAll(); achReady = true;
+}
+async function syncNow(pull = false){
+  if (!sync.pass) { renderSync(); return; }
+  if (sync.busy) { scheduleSync(); return; }
+  sync.busy = true; renderSync();
+  try {
+    let push = true;
+    if (pull) {
+      const remote = (await call("GET")).data.save;
+      if (remote) {
+        const r = remote.updatedAt || 0, l = state.updatedAt || 0;
+        if (r > l) { applyRemote(remote); toast("ach", "Cloud save loaded", "Your latest progress is back"); push = false; }
+        else if (r === l) push = false;
+      }
+    }
+    if (push) {
+      const res = await call("PUT", state);
+      if (res.conflict && res.data.save) { applyRemote(res.data.save); toast("ach", "Newer save found", "Loaded progress from another device"); }
+    }
+    sync.lastSync = new Date(); sync.error = "";
+  } catch(e) {
+    if (e.message === "auth") { sync.pass = null; try { localStorage.removeItem(PASS_KEY); } catch(_) {} sync.error = "That passphrase didn't match. Enter it again."; }
+    else sync.error = `Couldn't sync (${e.message}). Progress is still saved on this device and will retry on the next change.`;
+  } finally { sync.busy = false; renderSync(); }
+}
+function scheduleSync(){
+  if (typeof sync === "undefined" || !sync.pass) return;
+  clearTimeout(sync.timer); sync.timer = setTimeout(() => syncNow(false), 2000);
+}
+function syncInit(){
+  try { sync.pass = localStorage.getItem(PASS_KEY); } catch(e) {}
+  const input = document.getElementById("sync-pass");
+  const connect = () => {
+    const v = input.value.trim();
+    if (!v) { sync.error = "Enter your sync passphrase first."; renderSync(); return; }
+    sync.pass = v; input.value = "";
+    try { localStorage.setItem(PASS_KEY, v); } catch(e) {}
+    syncNow(true);
+  };
+  document.getElementById("sync-connect").addEventListener("click", connect);
+  input.addEventListener("keydown", e => { if (e.key === "Enter") connect(); });
+  document.getElementById("sync-now").addEventListener("click", () => syncNow(true));
+  document.getElementById("sync-forget").addEventListener("click", () => {
+    if (!confirm("Disconnect this device? Your cloud save stays on the server.")) return;
+    sync.pass = null; sync.lastSync = null; sync.error = ""; try { localStorage.removeItem(PASS_KEY); } catch(e) {} renderSync();
+  });
+  syncBtn.addEventListener("click", () => sync.pass ? syncNow(true) : document.getElementById("cloud").scrollIntoView({block:"center"}) || input.focus());
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") syncNow(true); });
+  renderSync();
+  if (sync.pass) syncNow(true);
+}
+
+/* ---------- style toggle: terminal / logbook ---------- */
+(function(){
+  const K = "thm-roadmap-skin", root = document.documentElement, btn = document.getElementById("skin-btn");
+  const sync = () => btn.setAttribute("aria-pressed", String(root.getAttribute("data-skin") === "terminal"));
+  sync();
+  btn.addEventListener("click", () => {
+    const next = root.getAttribute("data-skin") === "terminal" ? "logbook" : "terminal";
+    root.setAttribute("data-skin", next); try { localStorage.setItem(K, next); } catch(e) {} sync();
+  });
+})();
+
+/* ---------- light / dark toggle ---------- */
+(function(){
+  const T = "thm-roadmap-theme", root = document.documentElement, btn = document.getElementById("theme-btn");
+  const apply = v => v ? root.setAttribute("data-theme", v) : root.removeAttribute("data-theme");
+  try { apply(localStorage.getItem(T)); } catch(e) {}
+  btn.addEventListener("click", () => {
+    const cur = root.getAttribute("data-theme") || "dark";
+    const next = cur === "light" ? "dark" : "light";
+    apply(next); try { localStorage.setItem(T, next); } catch(e) {}
+  });
+})();
+
+
+/* ---------- motivation: greeting, pace message, next mission, streak, tip ---------- */
+const tips = [
+  "Write one line of notes after every room. Future you, prepping for interviews, will thank you.",
+  "Stuck for 30 minutes? Re-enumerate. The answer is usually in something you skimmed past.",
+  "Your Spring Boot experience is a superpower here: you already know how the apps you're attacking are built.",
+  "Consistency beats intensity. Four calm sessions a week will take you further than one exhausting weekend.",
+  "Every finding you write up properly is a portfolio piece in waiting.",
+  "It's normal to feel lost in a new room. That feeling is what learning feels like from the inside.",
+  "Explain today's vulnerability out loud in two sentences. If you can, you own it.",
+  "Read the fix, not just the exploit. AppSec roles pay for people who can do both.",
+  "Walkthroughs are fine when you're stuck. Just redo the box later without one.",
+  "Small wins count. One flag, one fixed bug, one clear paragraph: that's progress.",
+  "You don't need to know everything. You need to know how to find out, and to keep notes when you do.",
+  "Rest is part of the plan. A skipped evening isn't a failed week.",
+  "Burp Repeater is your notebook for requests. Save the interesting ones.",
+  "The goal isn't badges. It's being the person who can calmly say: here's the bug, here's the impact, here's the fix.",
+  "Compare today's you with last month's you, not with someone's highlight reel."
+];
+const clearLines = ["Nice work, that's another one in the log.", "Solid. Momentum is building.", "Cleared. One step closer to job-ready.",
+  "That's how it's done.", "Progress logged. Keep the rhythm going.", "Great job. Take a breath and enjoy that one."];
+const pad2 = n => String(n).padStart(2, "0");
+function dayKey(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function markActive(){
+  if (!Array.isArray(state.activity)) state.activity = [];
+  const k = dayKey(today());
+  if (!state.activity.includes(k)) { state.activity.push(k); state.activity = state.activity.slice(-120); }
+}
+function streakDays(){
+  const set = new Set(state.activity || []); let d = today(), n = 0;
+  if (!set.has(dayKey(d))) d = new Date(d.getTime() - DAY);
+  while (set.has(dayKey(d))) { n++; d = new Date(d.getTime() - DAY); }
+  return n;
+}
+function renderHero(){
+  const done = doneCount(), now = currentWeek(), h = new Date().getHours();
+  const name = (state.handle || "").trim() || "there";
+  document.getElementById("hello").textContent = `${h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"}, ${name}.`;
+  let msg;
+  if (done === 24) msg = "All 24 missions cleared. That's a career switch's worth of practice. Go show it off.";
+  else if (now === null) msg = done ? `${done} missions already cleared. Set your start date and the plan locks in around you.` : "Set your start date below and your plan comes to life. Mission 01 is a gentle warm-up.";
+  else if (now === 0) { const d = Math.round((parseDate(state.start) - today())/DAY); msg = `Your quest begins in ${d} day${d===1?"":"s"}. Get comfortable, then let's go.`; }
+  else {
+    const diff = done - Math.min(24, now - 1), left = 24 - done;
+    if (diff >= 2) msg = `${diff} missions ahead of plan. That's real momentum. Keep it steady, not frantic.`;
+    else if (diff === 1) msg = "One mission ahead of plan. Nicely done.";
+    else if (diff === 0) msg = done === 0 ? "Week one is here. One small session today and you're on the board." : `Right on pace, with ${left} to go. You've got this.`;
+    else if (diff === -1) msg = "Just one mission behind. A single focused session closes the gap.";
+    else msg = `${-diff} missions behind, and that's okay. Pick the next one, do one session today, and the gap starts shrinking.`;
+  }
+  document.getElementById("cheer").textContent = msg;
+  const nextIdx = milestones.findIndex((_,i) => !state.weeks[i]), next = document.getElementById("next");
+  if (nextIdx < 0) next.innerHTML = "<span>Next up: the final boss below. You're ready for it.</span>";
+  else {
+    next.innerHTML = `<span>Next up: <b>Mission ${pad2(nextIdx+1)}, ${esc(milestones[nextIdx][0])}</b></span><button type="button" id="go-next">Open mission</button>`;
+    document.getElementById("go-next").onclick = () => goToWeek(nextIdx+1);
+  }
+  const pct = Math.round(done/24*100);
+  document.getElementById("hero-pct").textContent = `${pct}%`;
+  document.getElementById("hero-arc").style.strokeDashoffset = 326.73 * (1 - done/24);
+  const st = streakDays(), sEl = document.getElementById("streak");
+  sEl.className = "chip-s" + (st ? " hot" : "");
+  sEl.textContent = st >= 2 ? `🔥 ${st}-day streak` : st === 1 ? "🔥 Active today" : (state.activity||[]).length ? "Start a new streak today" : "";
+  const q = (state.sessions[sessionKey()] || []).filter(Boolean).length, wEl = document.getElementById("week-left");
+  wEl.className = "chip-s" + (q >= 5 ? " good" : "");
+  wEl.textContent = q >= 5 ? "Week's sessions done ✓" : `${q} of 5 sessions this week`;
+  const doy = Math.floor((today() - new Date(today().getFullYear(),0,0)) / DAY);
+  document.getElementById("tip").innerHTML = `<b>Tip of the day:</b> ${esc(tips[doy % tips.length])}`;
+}
+
+function renderAll(){ renderHero(); renderPlan(); renderPaths(); renderMissions(); renderQuests(); renderLoot(); renderSide(); renderShop(); renderBoss(); renderAchievements(); renderHUD(); }
+load(); lastSnapshot = snapshot(); renderAll(); achReady = true; spy(); boot(); syncInit();
+</script>
+</body>
+</html>
