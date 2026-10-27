@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>try{var d=document.documentElement,k=localStorage.getItem("thm-roadmap-skin"),t=localStorage.getItem("thm-roadmap-theme");if(k)d.setAttribute("data-skin",k);if(t)d.setAttribute("data-theme",t);}catch(e){}</script>
-<title>Backend Dev → Cybersecurity · Quest Log</title>
+<title>Backend Dev → Cybersecurity · Practical Quest Log</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -186,6 +186,23 @@
   .mission details[open] summary::before { content:"−"; }
   .has-notes { color:var(--faint); margin-left:4px; }
   .mission textarea { width:100%; max-width:620px; min-height:80px; resize:vertical; margin-top:8px; display:block; }
+  .workflow { margin-top:12px; padding:12px; border:1px dashed var(--rule); background:var(--bg); }
+  .free-access { margin:16px 0; border:1px solid var(--accent); background:var(--accent-soft); padding:16px; border-radius:var(--r); }
+  .free-access h3 { margin-top:0; }
+  .free-access ul { margin-bottom:0; }
+  .lab-links { display:flex; flex-wrap:wrap; gap:7px; margin:10px 0 12px; }
+  .lab-links a { display:inline-block; padding:5px 9px; border:1px solid var(--rule); border-radius:5px; font-size:.78rem; text-decoration:none; }
+  .lab-links a:hover { border-color:var(--accent); color:var(--accent); }
+  .free-label { color:var(--accent); font-size:.72rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+  .workflow-title { display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px; font-weight:600; }
+  .workflow-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:6px 12px; }
+  .workflow-steps label { display:flex; gap:8px; align-items:flex-start; font-size:.84rem; color:var(--muted); cursor:pointer; }
+  .workflow-steps input { margin-top:4px; }
+  .workflow-status { font-size:.78rem; color:var(--marker); }
+  .workflow-status.mastered { color:var(--accent); }
+  .mission.practice-ready { border-right:2px solid var(--accent); }
+  .workflow textarea { max-width:100%; min-height:68px; }
+  .mastery-summary { margin:12px 0; padding:12px 14px; border:1px solid var(--rule-soft); background:var(--surface); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
   .hours-row { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:.84rem; color:var(--muted); }
   .hours-row input { width:84px; }
   .empty { text-align:center; padding:30px; color:var(--muted); border:1px dashed var(--rule); border-radius:var(--r); margin-top:16px; }
@@ -476,6 +493,22 @@
     .badges { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .toasts { left:16px; right:16px; max-width:none; }
   }
+
+  /* ---- free-first additions: alignment + mobile ---- */
+  .workflow-steps { grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); }
+  .workflow-steps label { min-width:0; }
+  .workflow, .free-access, .mastery-summary { min-width:0; }
+  .free-access li + li { margin-top:8px; }
+  .lab-links a { max-width:100%; overflow-wrap:anywhere; }
+  .mastery-summary > strong { white-space:nowrap; }
+  @media (max-width:560px) {
+    .mission, :root[data-skin="terminal"] .mission { grid-template-columns:26px minmax(0,1fr); column-gap:10px; padding:12px 4px 10px; }
+    .free-access { padding:14px; }
+    .free-access ul { padding-left:18px; }
+    .workflow { padding:10px; }
+    .mastery-summary { padding:10px 12px; }
+    .lab-links a { padding:6px 10px; }
+  }
 </style>
 </head>
 <body>
@@ -560,7 +593,7 @@
   </section>
 
   <h2 id="paths"><span class="lvlno">01</span> Campaigns</h2>
-  <p class="sub">The TryHackMe learning paths, in play order. Set each one's status as you go. Completing a campaign earns 150 XP.</p>
+  <p class="sub">Suggested TryHackMe paths in play order. Some rooms may require a subscription; use the Free Rooms hub and free alternatives below before paying. Completing a campaign earns 150 XP.</p>
   <div class="panel campaign" data-path="p1">
     <div class="world">W1<small>Weeks 1–3</small></div><div>
       <span class="tag green">Foundation</span>
@@ -586,12 +619,26 @@
     </div>
   </div>
   <div class="callout"><strong>Bonus world:</strong> Add the <a href="https://tryhackme.com/path/outline/offensivepentesting" target="_blank" rel="noopener">Offensive Pentesting</a> path or targeted Windows/Linux labs after identifying infrastructure gaps. Don't rush through multiple paths just to collect completion badges.</div>
+  <section class="free-access" id="free-labs" aria-label="Free lab access guide">
+    <h3><span class="free-label">Free-first mode</span><br>What you can do without a subscription</h3>
+    <p>You can build real VAPT and AppSec skills for ₹0. Use these links first; every link below is free to access, though some local labs require installing software on your own machine.</p>
+    <ul>
+      <li><strong><a href="https://tryhackme.com/free-rooms" target="_blank" rel="noopener">TryHackMe Free Rooms</a> — free account, no paid subscription.</strong> Choose rooms marked free. TryHackMe currently lists 650+ free rooms; free AttackBox use is limited to 1 hour per day. You can also use your own Kali/Linux machine and the room's VPN instructions where supported.</li>
+      <li><strong><a href="https://portswigger.net/web-security" target="_blank" rel="noopener">PortSwigger Web Security Academy</a> — completely free.</strong> Interactive labs for SQL injection, XSS, access control, authentication, SSRF, path traversal, JWT, OAuth and more. Burp Suite Community Edition is enough to start.</li>
+      <li><strong><a href="https://owasp.org/www-project-juice-shop/" target="_blank" rel="noopener">OWASP Juice Shop</a> — free and open source.</strong> Run it locally with Docker or Node.js and practice web/API testing safely.</li>
+      <li><strong><a href="https://overthewire.org/wargames/bandit/" target="_blank" rel="noopener">OverTheWire: Bandit</a> — free.</strong> Build Linux command-line and SSH fundamentals.</li>
+      <li><strong><a href="https://github.com/juice-shop/juice-shop" target="_blank" rel="noopener">Juice Shop source code</a> + your own Spring Boot demo app.</strong> Practice code review, dependency scanning, authorization tests and fix verification without paying for a lab platform.</li>
+    </ul>
+    <p><strong>What requires payment?</strong> On TryHackMe, some learning-path rooms, full paths, unlimited AttackBox time and advanced content are subscription features. Do not assume a path linked above is fully free: check the room's access label. Premium is optional, not a prerequisite for this roadmap; consider it only if a specific locked room blocks your next milestone. MAX is not needed at beginner stage.</p>
+    <p class="muted small">Plan details can change; verify current access on <a href="https://tryhackme.com/pricing" target="_blank" rel="noopener">TryHackMe pricing</a>. Practice only on lab targets or systems you are authorized to test.</p>
+  </section>
 
   <h2 id="tracker"><span class="lvlno">02</span> Mission map</h2>
   <p class="sub">24 missions across 5 acts, rising from Easy to Insane. Each act ends in a boss mission. Tick a mission when its practical milestone is done (+100 XP, bosses +200).</p>
   <div class="panel">
     <div class="row-between"><strong id="progress-label">0 / 24 missions cleared</strong><span id="progress-percent" class="muted">0%</span></div>
     <div class="bar"><div id="progress-bar"></div></div>
+    <div class="mastery-summary"><div><strong>Practical mastery</strong><div class="muted small">Complete the workflow and record evidence for each mission.</div></div><strong id="mastery-count">0 / 24 ready for review</strong></div>
     <div class="map-wrap"><div class="map" id="map"></div></div>
     <div class="legend">
       <span><i class="k" style="background:var(--green);border-color:var(--green)"></i>Cleared</span>
@@ -624,7 +671,7 @@
   <div class="quests" id="quests"></div>
 
   <h2 id="resources"><span class="lvlno">04</span> Loot</h2>
-  <p class="sub">Free resources that power up your skills.</p>
+  <p class="sub">Free resources that power up your skills. No paid subscription is required for these resources.</p>
   <div class="grid">
     <div class="panel"><h3><a href="https://portswigger.net/web-security" target="_blank" rel="noopener" data-res="psa">PortSwigger Web Security Academy</a></h3><p>Free web security explanations and labs for Burp Suite, injection, access control, authentication, SSRF, and advanced attacks.</p></div>
     <div class="panel"><h3><a href="https://owasp.org/www-project-web-security-testing-guide/" target="_blank" rel="noopener" data-res="wstg">OWASP Web Security Testing Guide</a></h3><p>A structured methodology and checklist for web application assessments.</p></div>
@@ -668,7 +715,7 @@
 
   <h2>Save &amp; load</h2>
   <div class="panel backup">
-    <p class="muted" style="margin-top:0">Your save lives only in this browser. To continue on another device, copy the save code, paste it into this box there, then choose Load save.</p>
+    <p class="muted" style="margin-top:0">Your save lives in this browser. Mission workflow checklists and evidence notes are included in your save code. To continue on another device, copy the save code, paste it into this box there, then choose Load save.</p>
     <div class="toolbar" style="margin-top:0">
       <button type="button" id="make-backup">Show save code</button>
       <button type="button" id="restore">Load save</button>
@@ -763,7 +810,7 @@ const ranks = [[1,"Script Kiddie","👾"],[3,"Packet Sniffer","📡"],[5,"Recon 
 
 /* ---------- state ---------- */
 const KEY = "thm-roadmap-v2";
-const blank = () => ({weeks:[], ready:[], start:"", hours:8.5, paths:{}, notes:{}, sessions:{}, projects:{}, opened:{}, handle:"player_one", ach:[], activity:[], updatedAt:0});
+const blank = () => ({weeks:[], ready:[], start:"", hours:8.5, paths:{}, notes:{}, practice:{}, evidence:{}, sessions:{}, projects:{}, opened:{}, handle:"player_one", ach:[], activity:[], updatedAt:0});
 let state = blank();
 function load(){
   try {
@@ -883,6 +930,33 @@ milestones.forEach((m,i) => {
   b.addEventListener("click", () => goToWeek(n));
   map.appendChild(b);
 });
+const freeLabLinks = {
+  1:[['TryHackMe free rooms','https://tryhackme.com/free-rooms'],['OverTheWire Bandit','https://overthewire.org/wargames/bandit/']],
+  2:[['TryHackMe free rooms','https://tryhackme.com/free-rooms'],['OverTheWire Bandit','https://overthewire.org/wargames/bandit/']],
+  3:[['TryHackMe free rooms','https://tryhackme.com/free-rooms'],['Nmap reference guide','https://nmap.org/book/man.html']],
+  4:[['PortSwigger: essential skills','https://portswigger.net/web-security/essential-skills'],['Burp Suite Community','https://portswigger.net/burp/communitydownload']],
+  5:[['PortSwigger: SQL injection','https://portswigger.net/web-security/sql-injection'],['OWASP Juice Shop','https://owasp.org/www-project-juice-shop/']],
+  6:[['PortSwigger: access control','https://portswigger.net/web-security/access-control'],['OWASP Juice Shop','https://owasp.org/www-project-juice-shop/']],
+  7:[['PortSwigger: authentication','https://portswigger.net/web-security/authentication'],['PortSwigger: JWT','https://portswigger.net/web-security/jwt']],
+  8:[['PortSwigger Web Security Academy','https://portswigger.net/web-security'],['OWASP Juice Shop','https://owasp.org/www-project-juice-shop/']],
+  9:[['PortSwigger all labs','https://portswigger.net/web-security/all-labs'],['OWASP WSTG','https://owasp.org/www-project-web-security-testing-guide/']],
+  10:[['PortSwigger: path traversal','https://portswigger.net/web-security/file-path-traversal'],['PortSwigger: OS command injection','https://portswigger.net/web-security/os-command-injection']],
+  11:[['TryHackMe free rooms','https://tryhackme.com/free-rooms'],['OverTheWire Bandit','https://overthewire.org/wargames/bandit/']],
+  12:[['OWASP WSTG','https://owasp.org/www-project-web-security-testing-guide/'],['PortSwigger all labs','https://portswigger.net/web-security/all-labs']],
+  13:[['Spring Security reference','https://docs.spring.io/spring-security/reference/'],['OWASP API Security','https://owasp.org/www-project-api-security/']],
+  14:[['PortSwigger: OAuth authentication','https://portswigger.net/web-security/oauth'],['PortSwigger: JWT','https://portswigger.net/web-security/jwt']],
+  15:[['OWASP SQL Injection Prevention','https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html'],['PostgreSQL docs','https://www.postgresql.org/docs/']],
+  16:[['OWASP Cheat Sheet Series','https://cheatsheetseries.owasp.org/'],['OWASP Dependency-Check','https://owasp.org/www-project-dependency-check/']],
+  17:[['PortSwigger: SSRF','https://portswigger.net/web-security/ssrf'],['PortSwigger: path traversal','https://portswigger.net/web-security/file-path-traversal']],
+  18:[['OWASP Cheat Sheet Series','https://cheatsheetseries.owasp.org/'],['Spring Security reference','https://docs.spring.io/spring-security/reference/']],
+  19:[['OWASP Dependency-Check','https://owasp.org/www-project-dependency-check/'],['SonarQube Community Build','https://www.sonarsource.com/products/sonarqube/']],
+  20:[['PortSwigger all labs','https://portswigger.net/web-security/all-labs'],['OWASP Juice Shop','https://owasp.org/www-project-juice-shop/']],
+  21:[['TryHackMe free rooms','https://tryhackme.com/free-rooms'],['OverTheWire Bandit','https://overthewire.org/wargames/bandit/']],
+  22:[['TryHackMe free rooms','https://tryhackme.com/free-rooms'],['Nmap reference guide','https://nmap.org/book/man.html']],
+  23:[['PortSwigger Web Security Academy','https://portswigger.net/web-security'],['OWASP WSTG','https://owasp.org/www-project-web-security-testing-guide/']],
+  24:[['PortSwigger all labs','https://portswigger.net/web-security/all-labs'],['OWASP Juice Shop','https://owasp.org/www-project-juice-shop/']]
+};
+const renderLabLinks = n => `<div class="lab-links" aria-label="Free resources for mission ${n}">${(freeLabLinks[n]||[]).map(([label,url]) => `<a href="${url}" target="_blank" rel="noopener">${label} <span class="free-label">Free</span></a>`).join('')}</div>`;
 const missionWrap = document.getElementById("missions");
 milestones.forEach((m,i) => {
   const n = i+1, a = actOf(n), boss = isBoss(n);
@@ -900,6 +974,20 @@ milestones.forEach((m,i) => {
       <details><summary>Notes and hours<span class="has-notes"></span></summary>
         <textarea data-note="${n}" placeholder="Rooms finished, links, what clicked, what to revisit…" aria-label="Notes for mission ${n}"></textarea>
         <div class="hours-row"><label for="hrs-${n}">Hours logged</label><input type="number" id="hrs-${n}" data-hours="${n}" min="0" max="80" step="0.5" placeholder="0"></div>
+        <div class="workflow" aria-label="Practical workflow for mission ${n}">
+          <div class="workflow-title"><span>Practical workflow</span><span class="workflow-status" data-practice-status="${n}">0 / 5 stages</span></div>
+          <div class="muted small">Suggested free lab / reference links</div>${renderLabLinks(n)}
+          <div class="workflow-steps">
+            <label><input type="checkbox" data-stage="learn" data-mission="${n}"> Learn the concept</label>
+            <label><input type="checkbox" data-stage="practice" data-mission="${n}"> Complete a lab</label>
+            <label><input type="checkbox" data-stage="document" data-mission="${n}"> Document evidence and impact</label>
+            <label><input type="checkbox" data-stage="fix" data-mission="${n}"> Explain or implement a fix</label>
+            <label><input type="checkbox" data-stage="retest" data-mission="${n}"> Retest / verify the fix</label>
+          </div>
+          <label class="label" for="evidence-${n}" style="display:block;margin-top:10px">Evidence / proof of work</label>
+          <textarea id="evidence-${n}" data-evidence="${n}" placeholder="Lab link or name, sanitized finding, steps to reproduce, code/commit link, test result…" aria-label="Evidence for mission ${n}"></textarea>
+          <p class="muted small">Mastery is only ready for review when all stages are checked and evidence is recorded. This tracker does not independently verify the evidence.</p>
+        </div>
       </details>
     </div>
     <div class="m-meta"><span class="dates"></span><span class="m-xp">+${boss ? XP.boss : XP.week} XP</span></div>`;
@@ -931,6 +1019,16 @@ function renderMissions(){
     if (document.activeElement !== hr) hr.value = note.hours || "";
     const bits = []; if (+note.hours > 0) bits.push(`${note.hours} h`); if ((note.text||"").trim()) bits.push("notes");
     el.querySelector(".has-notes").textContent = bits.length ? `(${bits.join(", ")})` : "";
+    const stages = state.practice[n] || {};
+    let stageCount = 0;
+    el.querySelectorAll("[data-stage]").forEach(cb => { cb.checked = !!stages[cb.dataset.stage]; if (cb.checked) stageCount++; });
+    const evidenceEl = el.querySelector("[data-evidence]");
+    if (document.activeElement !== evidenceEl) evidenceEl.value = state.evidence[n] || "";
+    const readyForReview = stageCount === 5 && !!(state.evidence[n] || "").trim();
+    const practiceStatus = el.querySelector("[data-practice-status]");
+    practiceStatus.textContent = readyForReview ? "Ready for review" : `${stageCount} / 5 stages`;
+    practiceStatus.classList.toggle("mastered", readyForReview);
+    el.classList.toggle("practice-ready", readyForReview);
     const visible = (filter === "all" || (filter === "done" && isDone) || (filter === "todo" && !isDone) || (filter === "notes" && hasNotes) || (filter === "boss" && isBoss(n)))
                  && (!actFilter || el.dataset.act === actFilter);
     el.classList.toggle("hidden", !visible); if (visible) shown++;
@@ -948,6 +1046,8 @@ function renderMissions(){
   document.getElementById("filter-info").innerHTML = a ? `Showing ${esc(a.name)} · <button type="button" class="link" id="clear-act">Show all acts</button>` : "";
   const ca = document.getElementById("clear-act"); if (ca) ca.onclick = () => { actFilter = null; renderMissions(); };
   document.getElementById("hours-total").textContent = totalHrs ? `${totalHrs} h logged` : "";
+  const reviewReady = milestones.filter((_,i) => { const n=i+1, st=state.practice[n]||{}; return ["learn","practice","document","fix","retest"].every(k=>st[k]) && !!(state.evidence[n]||"").trim(); }).length;
+  document.getElementById("mastery-count").textContent = `${reviewReady} / 24 ready for review`;
   document.querySelectorAll("[data-filter]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.filter === filter)));
   const jump = document.getElementById("jump-now");
   jump.disabled = !(now >= 1 && now <= 24); jump.title = jump.disabled ? "Set a start date to use this" : "";
@@ -1116,7 +1216,11 @@ function renderAchievements(){
 /* ---------- changes ---------- */
 document.addEventListener("change", e => {
   const t = e.target;
-  if (t.matches("[data-week]")) {
+  if (t.matches("[data-stage]")) {
+    const n = +t.dataset.mission, key = t.dataset.stage;
+    state.practice[n] = Object.assign({}, state.practice[n], {[key]:t.checked});
+  }
+  else if (t.matches("[data-week]")) {
     const i = +t.dataset.week; state.weeks[i] = t.checked; floatXP(t, (t.checked?1:-1) * (isBoss(i+1) ? XP.boss : XP.week));
     if (t.checked) {
       const a = actOf(i+1), actDone = milestones.every((_,j) => j+1 < a.from || j+1 > a.to || state.weeks[j]);
@@ -1138,6 +1242,9 @@ document.addEventListener("input", e => {
     if (t.matches("[data-note]")) note.text = t.value; else note.hours = t.value;
     state.notes[n] = note;
     clearTimeout(noteTimer); noteTimer = setTimeout(() => { save(); renderMissions(); renderAchievements(); }, 400);
+  } else if (t.matches("[data-evidence]")) {
+    state.evidence[t.dataset.evidence] = t.value;
+    clearTimeout(noteTimer); noteTimer = setTimeout(() => { save(); renderMissions(); }, 400);
   }
 });
 document.getElementById("reset-ready").addEventListener("click", () => { if (confirm("Reset the final boss checklist?")) { state.ready = []; save(); lastLevel = null; renderAll(); } });
